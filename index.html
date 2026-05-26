@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGB BI – Login</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:    #1a1a2e;
+      --mid:     #16213e;
+      --blue:    #0f3460;
+      --accent:  #e94560;
+      --green:   #27ae60;
+      --red:     #e74c3c;
+      --sky:     #2980b9;
+      --text:    #1a1a2e;
+      --muted:   #888;
+      --border:  #dde0e7;
+      --bg:      #f0f2f5;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ════════════════════════════════════════════
+       TELA DE LOGIN
+    ════════════════════════════════════════════ */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 50%, var(--blue) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity .4s ease, visibility .4s ease;
+    }
+    #loginScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 44px 40px 36px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.45);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .login-logo .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+    .login-logo .logo-mark svg { width: 28px; height: 28px; fill: #fff; }
+    .login-logo h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--dark);
+      letter-spacing: -.3px;
+    }
+    .login-logo p {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .login-field label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: #555;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-wrap svg {
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .login-field input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 11px 12px 11px 38px;
+      font-size: .9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      background: #fafbfc;
+    }
+    .login-field input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(15,52,96,.1);
+      background: #fff;
+    }
+
+    #loginError {
+      font-size: .78rem;
+      color: var(--red);
+      font-weight: 600;
+      min-height: 18px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--blue) 0%, #1a4a7a 100%);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: filter .15s, transform .1s;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-login:hover:not(:disabled) { filter: brightness(1.12); }
+    .btn-login:active:not(:disabled) { transform: scale(.98); }
+    .btn-login:disabled { opacity: .6; cursor: not-allowed; }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: .72rem;
+      color: #bbb;
+    }
+
+    /* ════════════════════════════════════════════
+       DASHBOARD
+    ════════════════════════════════════════════ */
+    #dashboard { display: none; }
+    #dashboard.visible { display: block; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 60%, var(--blue) 100%);
+      color: #fff;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: .3px; }
+    header .tag {
+      background: var(--accent);
+      font-size: .62rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .8rem;
+    }
+    .header-user .avatar {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .85rem;
+      border: 1.5px solid rgba(255,255,255,.3);
+    }
+    .header-user .uname { font-weight: 600; opacity: .9; }
+    .btn-logout {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
+      padding: 5px 13px;
+      border-radius: 6px;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,.22); }
+
+    /* PAINEL DE PERÍODO */
+    .panel {
+      background: #fff;
+      margin: 20px 28px;
+      border-radius: 10px;
+      padding: 18px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 18px;
+    }
+    .panel-title {
+      width: 100%;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: .75rem; font-weight: 600; color: #555; }
+    .field input[type="date"] {
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-size: .875rem;
+      color: var(--text);
+      outline: none;
+      transition: border .15s;
+      min-width: 160px;
+    }
+    .field input[type="date"]:focus { border-color: var(--blue); }
+
+    .btn {
+      padding: 9px 22px;
+      border: none;
+      border-radius: 7px;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.15); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* STATUS */
+    #status {
+      margin: 0 28px 12px;
+      font-size: .82rem;
+      min-height: 20px;
+      color: #555;
+    }
+    #status.error { color: var(--red); font-weight: 600; }
+    #status.ok    { color: var(--green); font-weight: 600; }
+
+    /* CARDS DE RESUMO */
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 0 28px 20px;
+    }
+    .card {
+      flex: 1 1 180px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+      border-left: 4px solid var(--blue);
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red   { border-left-color: var(--red); }
+    .card.blue  { border-left-color: var(--sky); }
+    .card label {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--muted);
+    }
+    .card .val { font-size: 1.35rem; font-weight: 700; color: var(--text); margin-top: 4px; }
+
+    /* RELATÓRIO */
+    .report-wrapper {
+      margin: 0 28px 40px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+    .report-header {
+      background: var(--blue);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .report-header h3 { font-size: .95rem; font-weight: 600; }
+    .report-header small { font-size: .75rem; opacity: .75; }
+
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+    thead th {
+      background: var(--mid);
+      color: #c8d6e5;
+      font-weight: 600;
+      padding: 10px 12px;
+      text-align: left;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+    thead th.num { text-align: right; }
+    tbody tr:nth-child(even) { background: #f8f9fb; }
+    tbody tr:hover { background: #eef3fb; }
+    tbody td { padding: 8px 12px; border-bottom: 1px solid #eee; white-space: nowrap; }
+    tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    tfoot tr td {
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    tfoot tr td.num { text-align: right; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: .7rem;
+      font-weight: 700;
+    }
+    .badge-green  { background: #d5f5e3; color: #1e8449; }
+    .badge-yellow { background: #fef9e7; color: #b7950b; }
+    .badge-red    { background: #fde8e8; color: #c0392b; }
+
+    /* LOADER */
+    .loader {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2.5px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #empty { text-align: center; padding: 40px; color: #aaa; font-size: .9rem; }
+
+    /* ── BOTÃO PDF ── */
+    .btn-pdf {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.35);
+      color: #fff;
+      border-radius: 6px;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-pdf:hover { background: rgba(255,255,255,.28); }
+    .btn-pdf svg { width: 14px; height: 14px; }
+
+    /* ════════════════════════════════════════════
+       IMPRESSÃO / PDF
+    ════════════════════════════════════════════ */
+    #printHeader { display: none; }
+
+    @media print {
+      @page { size: A4 landscape; margin: 10mm 12mm; }
+
+      #loginScreen,
+      header,
+      .panel,
+      #status,
+      .summary,
+      .btn-pdf             { display: none !important; }
+
+      body                 { background: #fff; font-size: 8pt; }
+      #dashboard           { display: block !important; }
+
+      /* cabeçalho de impressão */
+      #printHeader {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 2px solid #0f3460;
+        padding-bottom: 6px;
+        margin-bottom: 10px;
+      }
+      #printHeader .ph-left h2 {
+        font-size: 13pt;
+        font-weight: 700;
+        color: #0f3460;
+        margin: 0;
+      }
+      #printHeader .ph-left p {
+        font-size: 8pt;
+        color: #555;
+        margin: 2px 0 0;
+      }
+      #printHeader .ph-right {
+        text-align: right;
+        font-size: 7.5pt;
+        color: #666;
+        line-height: 1.5;
+      }
+
+      /* relatório sem sombra */
+      .report-wrapper {
+        margin: 0;
+        box-shadow: none;
+        border: 1px solid #ddd;
+        border-radius: 0;
+      }
+      .report-header {
+        background: #0f3460 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 8px 14px;
+      }
+      .report-header h3  { font-size: 9pt; }
+      .report-header small { font-size: 7.5pt; }
+
+      /* tabela compacta */
+      table { font-size: 7pt; }
+      thead th {
+        background: #16213e !important;
+        color: #c8d6e5 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 6px 8px;
+      }
+      tbody td { padding: 5px 8px; }
+      tbody tr:nth-child(even) {
+        background: #f4f6f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      tfoot tr td {
+        background: #0f3460 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 6px 8px;
+        font-size: 7.5pt;
+      }
+
+      /* badges coloridos no PDF */
+      .badge-green  { background: #d5f5e3 !important; color: #1e8449 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .badge-yellow { background: #fef9e7 !important; color: #b7950b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .badge-red    { background: #fde8e8 !important; color: #c0392b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      /* evita quebra de linha no meio de uma linha da tabela */
+      tbody tr { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     TELA DE LOGIN
+════════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div class="logo-mark">
+        <!-- ícone de gráfico de barras -->
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="10" width="4" height="12" rx="1"/>
+          <rect x="9" y="6"  width="4" height="16" rx="1"/>
+          <rect x="16" y="2" width="4" height="20" rx="1"/>
+        </svg>
+      </div>
+      <h1>SGB <span style="color:var(--accent)">BI</span></h1>
+      <p>Business Intelligence · Relatório de Vendas</p>
+    </div>
+
+    <div class="login-field">
+      <label>Usuário</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        <input type="text" id="lLogin" placeholder="Digite seu usuário" autocomplete="username" />
+      </div>
+    </div>
+
+    <div class="login-field">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="11" width="14" height="10" rx="2"/>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+        </svg>
+        <input type="password" id="lSenha" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+    </div>
+
+    <div id="loginError"></div>
+
+    <button class="btn-login" id="btnLogin" onclick="fazerLogin()">
+      Entrar
+    </button>
+
+    <div class="login-footer">SGB BI &copy; 2026 — acesso restrito</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════════════ -->
+<div id="dashboard">
+
+  <header>
+    <div class="header-left">
+      <h1>Relatório de Vendas Sintético</h1>
+      <span class="tag">SGB BI</span>
+    </div>
+    <div class="header-user">
+      <div class="avatar" id="headerAvatar">?</div>
+      <span class="uname" id="headerNome">—</span>
+      <button class="btn-logout" onclick="sair()">Sair</button>
+    </div>
+  </header>
+
+  <!-- PAINEL DE PERÍODO -->
+  <div class="panel">
+    <div class="panel-title">Configuração do Período</div>
+
+    <div class="field">
+      <label>Data inicial</label>
+      <input type="date" id="dt_de" />
+    </div>
+
+    <div class="field">
+      <label>Data final</label>
+      <input type="date" id="dt_ate" />
+    </div>
+
+    <button class="btn btn-primary" id="btnGerar" onclick="gerarRelatorio()">
+      Gerar Relatório
+    </button>
+  </div>
+
+  <div id="status"></div>
+
+  <!-- CARDS DE RESUMO -->
+  <div class="summary" id="summary" style="display:none">
+    <div class="card blue">
+      <label>Total de Grupos</label>
+      <div class="val" id="cardItens">0</div>
+    </div>
+    <div class="card green">
+      <label>Total Venda (R$)</label>
+      <div class="val" id="cardVenda">0,00</div>
+    </div>
+    <div class="card red">
+      <label>Total Custo (R$)</label>
+      <div class="val" id="cardCusto">0,00</div>
+    </div>
+    <div class="card">
+      <label>Margem Bruta (R$)</label>
+      <div class="val" id="cardMargem">0,00</div>
+    </div>
+    <div class="card">
+      <label>Margem (%)</label>
+      <div class="val" id="cardMargemPct">0%</div>
+    </div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="report-wrapper" id="reportWrapper" style="display:none">
+
+    <!-- cabeçalho visível apenas no PDF/impressão -->
+    <div id="printHeader">
+      <div class="ph-left">
+        <h2>SGB BI — Relatório de Vendas Sintético</h2>
+        <p id="phPeriodo"></p>
+      </div>
+      <div class="ph-right">
+        <div>Usuário: <strong id="phUsuario"></strong></div>
+        <div>Emitido em: <strong id="phDataHora"></strong></div>
+      </div>
+    </div>
+
+    <div class="report-header">
+      <h3>Vendas por Produto / Vendedor / Cliente</h3>
+      <div style="display:flex;align-items:center;gap:12px">
+        <small id="reportPeriodo"></small>
+        <button class="btn-pdf" onclick="gerarPDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+          Exportar PDF
+        </button>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Cód. Prod.</th>
+            <th>Descrição</th>
+            <th>Cód. Vend.</th>
+            <th>Vendedor</th>
+            <th>Cód. Cli.</th>
+            <th>Cliente</th>
+            <th>CEP</th>
+            <th class="num">Qtde.</th>
+            <th class="num">Custo (R$)</th>
+            <th class="num">Venda (R$)</th>
+            <th class="num">Margem</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr id="tfootRow">
+            <td colspan="7"><strong>TOTAL GERAL</strong></td>
+            <td class="num" id="ftQtde"></td>
+            <td class="num" id="ftCusto"></td>
+            <td class="num" id="ftVenda"></td>
+            <td class="num" id="ftMargem"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div id="empty" style="display:none">Nenhum registro encontrado para o período.</div>
+    </div>
+  </div>
+
+</div><!-- /dashboard -->
+
+<script>
+  const API_BASE = 'http://localhost:3007/sgbrbi';
+
+  // token guardado em memória (limpo ao fechar/recarregar)
+  let _token = null;
+  let _nomeUsuario = '';
+
+  // ── UTILITÁRIOS ──────────────────────────────────────────────────────────
+
+  const toNum    = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+  const fmtNum   = v => toNum(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtPct   = v => toNum(v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+  const dateToApi = v => v.replace(/-/g, '.');
+
+  function setStatus(msg, type = '') {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = type;
+  }
+
+  function badgeMargem(pct) {
+    const cls = pct >= 20 ? 'badge-green' : pct >= 5 ? 'badge-yellow' : 'badge-red';
+    return `<span class="badge ${cls}">${fmtPct(pct)}</span>`;
+  }
+
+  // ── SHA-256 ──────────────────────────────────────────────────────────────
+
+  async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // ── TELA DE LOGIN ────────────────────────────────────────────────────────
+
+  async function fazerLogin() {
+    const loginVal = document.getElementById('lLogin').value.trim();
+    const senhaVal = document.getElementById('lSenha').value;
+    const errEl    = document.getElementById('loginError');
+    const btn      = document.getElementById('btnLogin');
+
+    errEl.textContent = '';
+    if (!loginVal || !senhaVal) { errEl.textContent = 'Preencha usuário e senha.'; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Entrando…';
+
+    try {
+      const hash = await sha256(senhaVal);
+      const res  = await fetch(`${API_BASE}/usuario/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login: loginVal, senha: hash })
+      });
+      if (!res.ok) throw new Error('Usuário ou senha incorretos.');
+      const data = await res.json();
+      if (!data.token) throw new Error('Token não recebido.');
+
+      _token = data.token;
+      _nomeUsuario = data.nome_usuario || loginVal;
+
+      // atualiza header do dashboard
+      document.getElementById('headerNome').textContent = _nomeUsuario;
+      document.getElementById('headerAvatar').textContent = _nomeUsuario.charAt(0).toUpperCase();
+
+      // transição: oculta login, mostra dashboard
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('visible');
+
+    } catch (err) {
+      errEl.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+    }
+  }
+
+  function sair() {
+    _token = null;
+    _nomeUsuario = '';
+    document.getElementById('lSenha').value = '';
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('summary').style.display = 'none';
+    document.getElementById('reportWrapper').style.display = 'none';
+    document.getElementById('status').textContent = '';
+    document.getElementById('tbody').innerHTML = '';
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('dashboard').classList.remove('visible');
+  }
+
+  // ── VENDAS ───────────────────────────────────────────────────────────────
+
+  async function fetchVendas(dtDe, dtAte) {
+    const url = `${API_BASE}/vendas/analitico?dt_de=${dtDe}&dt_ate=${dtAte}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${_token}` } });
+    if (!res.ok) throw new Error(`Erro ao buscar vendas (HTTP ${res.status})`);
+    return res.json();
+  }
+
+  // ── AGRUPAMENTO ───────────────────────────────────────────────────────────
+
+  function agrupar(rows) {
+    const map = new Map();
+    for (const r of rows) {
+      const key = `${r.codprod}|${r.codvendedor}|${r.codcliente}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          codprod: r.codprod      ?? '—', decprod: r.decprod           ?? '—',
+          codvendedor: r.codvendedor ?? '—', nomevendedor: r.nomevendedor ?? '—',
+          codcliente: r.codcliente  ?? '—', nomecliente: r.nomecliente   ?? '—',
+          cepcliente: r.cepcliente  ?? '—',
+          qtde: 0, custo: 0, venda: 0,
+        });
+      }
+      const g = map.get(key);
+      const q = toNum(r.qtdevendida);
+      g.qtde  += q;
+      g.custo += q * toNum(r.precocustoitem);
+      g.venda += q * toNum(r.valorunit);
+    }
+    const str = v => v ?? '';
+    return [...map.values()].sort((a, b) =>
+      str(a.nomevendedor).localeCompare(str(b.nomevendedor)) ||
+      str(a.decprod).localeCompare(str(b.decprod))
+    );
+  }
+
+  // ── RENDERIZAÇÃO ──────────────────────────────────────────────────────────
+
+  function renderizar(grupos, dtDe, dtAte) {
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+
+    if (grupos.length === 0) {
+      document.getElementById('empty').style.display = '';
+      document.getElementById('tfootRow').style.display = 'none';
+      return;
+    }
+    document.getElementById('empty').style.display = 'none';
+    document.getElementById('tfootRow').style.display = '';
+
+    let totQtde = 0, totCusto = 0, totVenda = 0;
+
+    for (const g of grupos) {
+      totQtde  += g.qtde;
+      totCusto += g.custo;
+      totVenda += g.venda;
+      const margem = g.venda > 0 ? ((g.venda - g.custo) / g.venda) * 100 : 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${g.codprod}</td>
+        <td>${g.decprod}</td>
+        <td>${g.codvendedor}</td>
+        <td>${g.nomevendedor}</td>
+        <td>${g.codcliente}</td>
+        <td>${g.nomecliente}</td>
+        <td>${g.cepcliente}</td>
+        <td class="num">${fmtNum(g.qtde)}</td>
+        <td class="num">${fmtNum(g.custo)}</td>
+        <td class="num">${fmtNum(g.venda)}</td>
+        <td class="num">${badgeMargem(margem)}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    const totMargem = totVenda > 0 ? ((totVenda - totCusto) / totVenda) * 100 : 0;
+    document.getElementById('ftQtde').textContent  = fmtNum(totQtde);
+    document.getElementById('ftCusto').textContent = 'R$ ' + fmtNum(totCusto);
+    document.getElementById('ftVenda').textContent = 'R$ ' + fmtNum(totVenda);
+    document.getElementById('ftMargem').textContent = fmtPct(totMargem);
+
+    document.getElementById('cardItens').textContent = grupos.length;
+    document.getElementById('cardVenda').textContent  = 'R$ ' + fmtNum(totVenda);
+    document.getElementById('cardCusto').textContent  = 'R$ ' + fmtNum(totCusto);
+    document.getElementById('cardMargem').textContent = 'R$ ' + fmtNum(totVenda - totCusto);
+    document.getElementById('cardMargemPct').textContent = fmtPct(totMargem);
+
+    const fmtDate = d => d.split('.').reverse().join('/');
+    const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)} — ${grupos.length} grupos`;
+    document.getElementById('reportPeriodo').textContent = periodo;
+
+    // preenche cabeçalho de impressão
+    document.getElementById('phPeriodo').textContent   = periodo;
+    document.getElementById('phUsuario').textContent   = _nomeUsuario;
+    document.getElementById('phDataHora').textContent  =
+      new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+    document.getElementById('summary').style.display = 'flex';
+    document.getElementById('reportWrapper').style.display = '';
+  }
+
+  // ── GERAR PDF ────────────────────────────────────────────────────────────
+
+  function gerarPDF() {
+    // define o título da aba/janela temporariamente para nomear o arquivo
+    const original = document.title;
+    const periodo  = document.getElementById('reportPeriodo').textContent
+      .replace('Período: ', '').split(' —')[0].replace(/\//g, '-');
+    document.title = `Vendas_${periodo}`;
+    window.print();
+    document.title = original;
+  }
+
+  // ── GERAR RELATÓRIO ───────────────────────────────────────────────────────
+
+  async function gerarRelatorio() {
+    const dtDeRaw  = document.getElementById('dt_de').value;
+    const dtAteRaw = document.getElementById('dt_ate').value;
+
+    if (!dtDeRaw || !dtAteRaw) { setStatus('Selecione o período.', 'error'); return; }
+    if (dtDeRaw > dtAteRaw)    { setStatus('Data inicial deve ser ≤ data final.', 'error'); return; }
+
+    const btn = document.getElementById('btnGerar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Aguarde…';
+    document.getElementById('summary').style.display = 'none';
+    document.getElementById('reportWrapper').style.display = 'none';
+
+    try {
+      setStatus('Buscando dados de vendas…');
+      const rows  = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      const grupos = agrupar(rows);
+      renderizar(grupos, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      setStatus(`Relatório gerado — ${grupos.length} grupo(s).`, 'ok');
+    } catch (err) {
+      setStatus(err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerar Relatório';
+    }
+  }
+
+  // ── INICIALIZAÇÃO ─────────────────────────────────────────────────────────
+
+  (function init() {
+    // pré-preenche período com últimos 7 dias
+    const hoje = new Date();
+    const sete = new Date(hoje);
+    sete.setDate(sete.getDate() - 7);
+    const iso = d => d.toISOString().slice(0, 10);
+    document.getElementById('dt_de').value  = iso(sete);
+    document.getElementById('dt_ate').value = iso(hoje);
+
+    // Enter no campo de senha dispara o login
+    document.getElementById('lSenha').addEventListener('keydown', e => {
+      if (e.key === 'Enter') fazerLogin();
+    });
+    document.getElementById('lLogin').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('lSenha').focus();
+    });
+  })();
+</script>
+
+</body>
+</html>
