@@ -3,423 +3,421 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SGB BI – Login</title>
+  <title>Simple BI</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --dark:    #1a1a2e;
-      --mid:     #16213e;
-      --blue:    #0f3460;
-      --accent:  #e94560;
-      --green:   #27ae60;
-      --red:     #e74c3c;
-      --sky:     #2980b9;
-      --text:    #1a1a2e;
-      --muted:   #888;
-      --border:  #dde0e7;
-      --bg:      #f0f2f5;
+      --dark:   #1a1a2e;
+      --mid:    #16213e;
+      --blue:   #0f3460;
+      --accent: #e94560;
+      --green:  #27ae60;
+      --red:    #e74c3c;
+      --sky:    #2980b9;
+      --text:   #1a1a2e;
+      --muted:  #888;
+      --border: #dde0e7;
+      --bg:     #f0f2f5;
     }
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
 
-    /* ════════════════════════════════════════════
-       TELA DE LOGIN
-    ════════════════════════════════════════════ */
-    #loginScreen {
-      position: fixed;
-      inset: 0;
+    /* ════ VIEWS ════ */
+    .view { min-height: 100vh; }
+
+    /* ════ LOGIN ════ */
+    #viewLogin {
       background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 50%, var(--blue) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
-      transition: opacity .4s ease, visibility .4s ease;
+      padding: 24px;
     }
-    #loginScreen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
     .login-card {
       background: #fff;
       border-radius: 16px;
-      padding: 44px 40px 36px;
+      padding: 44px 40px 32px;
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
       box-shadow: 0 24px 60px rgba(0,0,0,.45);
-      display: flex;
-      flex-direction: column;
-      gap: 0;
     }
-
-    .login-logo {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .login-logo .logo-mark {
+    .login-logo { text-align: center; margin-bottom: 28px; }
+    .logo-mark {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 56px;
-      height: 56px;
+      width: 56px; height: 56px;
       background: linear-gradient(135deg, var(--blue), var(--accent));
       border-radius: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-    .login-logo .logo-mark svg { width: 28px; height: 28px; fill: #fff; }
-    .login-logo h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--dark);
-      letter-spacing: -.3px;
-    }
-    .login-logo p {
-      font-size: .78rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+    .logo-mark svg { width: 28px; height: 28px; fill: #fff; }
+    .login-logo h1 { font-size: 1.4rem; font-weight: 700; color: var(--dark); }
+    .login-logo p  { font-size: .78rem; color: var(--muted); margin-top: 4px; }
 
-    .login-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
+    .login-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
     .login-field label {
-      font-size: .75rem;
-      font-weight: 700;
-      color: #555;
-      letter-spacing: .4px;
-      text-transform: uppercase;
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; color: #555;
     }
-    .input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
     .input-wrap svg {
-      position: absolute;
-      left: 12px;
-      width: 16px;
-      height: 16px;
-      color: var(--muted);
-      pointer-events: none;
+      position: absolute; left: 11px; width: 16px; height: 16px;
+      color: var(--muted); pointer-events: none;
     }
-    .login-field input {
+    .login-field input,
+    .login-field select {
       width: 100%;
       border: 1.5px solid var(--border);
       border-radius: 9px;
-      padding: 11px 12px 11px 38px;
-      font-size: .9rem;
+      padding: 10px 12px 10px 36px;
+      font-size: .875rem;
       color: var(--text);
       outline: none;
-      transition: border-color .15s, box-shadow .15s;
       background: #fafbfc;
+      transition: border-color .15s, box-shadow .15s;
+      appearance: none;
     }
-    .login-field input:focus {
+    .login-field input:focus,
+    .login-field select:focus {
       border-color: var(--blue);
       box-shadow: 0 0 0 3px rgba(15,52,96,.1);
       background: #fff;
     }
-
-    #loginError {
-      font-size: .78rem;
-      color: var(--red);
-      font-weight: 600;
-      min-height: 18px;
-      margin-bottom: 8px;
-      text-align: center;
+    .select-arrow {
+      position: absolute; right: 11px; pointer-events: none;
+      color: var(--muted);
     }
+    .select-arrow svg { width: 14px; height: 14px; }
 
+    .login-error {
+      font-size: .78rem; color: var(--red); font-weight: 600;
+      min-height: 18px; margin-bottom: 8px; text-align: center;
+    }
     .btn-login {
-      width: 100%;
-      padding: 12px;
+      width: 100%; padding: 12px;
       background: linear-gradient(135deg, var(--blue) 0%, #1a4a7a 100%);
-      color: #fff;
-      border: none;
-      border-radius: 9px;
-      font-size: .95rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: .3px;
+      color: #fff; border: none; border-radius: 9px;
+      font-size: .95rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: filter .15s, transform .1s;
       margin-top: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
-    .btn-login:hover:not(:disabled) { filter: brightness(1.12); }
+    .btn-login:hover:not(:disabled) { filter: brightness(1.1); }
     .btn-login:active:not(:disabled) { transform: scale(.98); }
     .btn-login:disabled { opacity: .6; cursor: not-allowed; }
 
     .login-footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: .72rem;
-      color: #bbb;
+      text-align: center; margin-top: 18px;
+      font-size: .72rem; color: #bbb;
+      display: flex; justify-content: center; align-items: center; gap: 12px;
     }
+    .link-btn {
+      background: none; border: none; cursor: pointer;
+      color: #aaa; font-size: .72rem; text-decoration: underline;
+      padding: 0;
+    }
+    .link-btn:hover { color: #666; }
 
-    /* ════════════════════════════════════════════
-       DASHBOARD
-    ════════════════════════════════════════════ */
-    #dashboard { display: none; }
-    #dashboard.visible { display: block; }
-
-    /* HEADER */
-    header {
+    /* ════ HEADER (dashboard + admin) ════ */
+    .app-header {
       background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 60%, var(--blue) 100%);
       color: #fff;
-      padding: 14px 28px;
+      padding: 13px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: .3px; }
-    header .tag {
-      background: var(--accent);
-      font-size: .62rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      letter-spacing: 1px;
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .app-header h1 { font-size: 1rem; font-weight: 600; }
+    .header-tag {
+      background: var(--accent); font-size: .6rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .header-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: .8rem;
+    .header-empresa {
+      font-size: .75rem; opacity: .7; border-left: 1px solid rgba(255,255,255,.2);
+      padding-left: 10px; margin-left: 2px;
     }
-    .header-user .avatar {
-      width: 32px; height: 32px;
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .avatar {
+      width: 30px; height: 30px;
       background: rgba(255,255,255,.15);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: .85rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .82rem;
       border: 1.5px solid rgba(255,255,255,.3);
     }
-    .header-user .uname { font-weight: 600; opacity: .9; }
-    .btn-logout {
+    .header-uname { font-size: .8rem; font-weight: 600; opacity: .9; }
+    .btn-header {
       background: rgba(255,255,255,.12);
       border: 1px solid rgba(255,255,255,.25);
-      color: #fff;
-      padding: 5px 13px;
-      border-radius: 6px;
-      font-size: .75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .15s;
+      color: #fff; padding: 5px 12px;
+      border-radius: 6px; font-size: .73rem; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+      display: flex; align-items: center; gap: 5px;
     }
-    .btn-logout:hover { background: rgba(255,255,255,.22); }
+    .btn-header:hover { background: rgba(255,255,255,.22); }
+    .btn-header svg { width: 13px; height: 13px; }
 
-    /* PAINEL DE PERÍODO */
+    /* ════ DASHBOARD ════ */
+    #viewDashboard { background: var(--bg); }
+
     .panel {
       background: #fff;
-      margin: 20px 28px;
+      margin: 18px 24px;
       border-radius: 10px;
-      padding: 18px 24px;
+      padding: 16px 20px;
       box-shadow: 0 1px 6px rgba(0,0,0,.08);
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
-      gap: 18px;
+      gap: 16px;
     }
     .panel-title {
-      width: 100%;
-      font-size: .7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
+      width: 100%; font-size: .68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
     }
-    .field { display: flex; flex-direction: column; gap: 5px; }
-    .field label { font-size: .75rem; font-weight: 600; color: #555; }
-    .field input[type="date"] {
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: .72rem; font-weight: 600; color: #555; }
+    .field input[type="date"],
+    .field select {
       border: 1.5px solid var(--border);
-      border-radius: 7px;
-      padding: 8px 12px;
-      font-size: .875rem;
-      color: var(--text);
-      outline: none;
-      transition: border .15s;
-      min-width: 160px;
+      border-radius: 7px; padding: 8px 10px;
+      font-size: .85rem; color: var(--text);
+      outline: none; transition: border .15s;
+      min-width: 150px; background: #fff;
     }
-    .field input[type="date"]:focus { border-color: var(--blue); }
+    .field input[type="date"]:focus,
+    .field select:focus { border-color: var(--blue); }
 
-    .btn {
-      padding: 9px 22px;
-      border: none;
-      border-radius: 7px;
-      font-size: .875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: filter .15s, transform .1s;
-    }
+    .btn { padding: 9px 20px; border: none; border-radius: 7px; font-size: .85rem; font-weight: 600; cursor: pointer; transition: filter .15s, transform .1s; }
     .btn:active { transform: scale(.97); }
     .btn-primary { background: var(--blue); color: #fff; }
     .btn-primary:hover { filter: brightness(1.15); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
 
-    /* STATUS */
-    #status {
-      margin: 0 28px 12px;
-      font-size: .82rem;
-      min-height: 20px;
-      color: #555;
-    }
+    #status { margin: 0 24px 10px; font-size: .82rem; min-height: 20px; color: #555; }
     #status.error { color: var(--red); font-weight: 600; }
     #status.ok    { color: var(--green); font-weight: 600; }
 
-    /* CARDS DE RESUMO */
-    .summary {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin: 0 28px 20px;
-    }
+    /* cards */
+    .summary { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 24px 18px; }
     .card {
-      flex: 1 1 180px;
-      background: #fff;
-      border-radius: 10px;
-      padding: 16px 20px;
-      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+      flex: 1 1 160px; background: #fff; border-radius: 10px;
+      padding: 14px 18px; box-shadow: 0 1px 6px rgba(0,0,0,.08);
       border-left: 4px solid var(--blue);
     }
     .card.green { border-left-color: var(--green); }
     .card.red   { border-left-color: var(--red); }
     .card.blue  { border-left-color: var(--sky); }
-    .card label {
-      font-size: .68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--muted);
-    }
-    .card .val { font-size: 1.35rem; font-weight: 700; color: var(--text); margin-top: 4px; }
+    .card label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+    .card .val  { font-size: 1.3rem; font-weight: 700; color: var(--text); margin-top: 4px; }
 
-    /* RELATÓRIO */
+    /* tabela */
     .report-wrapper {
-      margin: 0 28px 40px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,.08);
-      overflow: hidden;
+      margin: 0 24px 40px; background: #fff;
+      border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.08); overflow: hidden;
     }
     .report-header {
-      background: var(--blue);
-      color: #fff;
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
+      background: var(--blue); color: #fff;
+      padding: 12px 18px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 8px;
     }
-    .report-header h3 { font-size: .95rem; font-weight: 600; }
-    .report-header small { font-size: .75rem; opacity: .75; }
+    .report-header h3 { font-size: .9rem; font-weight: 600; }
+    .report-header small { font-size: .73rem; opacity: .75; }
+    .report-header-right { display: flex; align-items: center; gap: 10px; }
+    .btn-pdf {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 12px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #fff; border-radius: 6px;
+      font-size: .74rem; font-weight: 600; cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-pdf:hover { background: rgba(255,255,255,.28); }
+    .btn-pdf svg { width: 13px; height: 13px; }
 
     .table-scroll { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .78rem; }
     thead th {
-      background: var(--mid);
-      color: #c8d6e5;
-      font-weight: 600;
-      padding: 10px 12px;
-      text-align: left;
-      white-space: nowrap;
-      position: sticky;
-      top: 0;
+      background: var(--mid); color: #c8d6e5; font-weight: 600;
+      padding: 9px 11px; text-align: left; white-space: nowrap; position: sticky; top: 0;
     }
     thead th.num { text-align: right; }
     tbody tr:nth-child(even) { background: #f8f9fb; }
     tbody tr:hover { background: #eef3fb; }
-    tbody td { padding: 8px 12px; border-bottom: 1px solid #eee; white-space: nowrap; }
+    tbody td { padding: 7px 11px; border-bottom: 1px solid #eee; white-space: nowrap; }
     tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
-    tfoot tr td {
-      background: var(--blue);
-      color: #fff;
-      font-weight: 700;
-      padding: 10px 12px;
-      white-space: nowrap;
-    }
-    tfoot tr td.num { text-align: right; }
+    tfoot td { background: var(--blue); color: #fff; font-weight: 700; padding: 9px 11px; white-space: nowrap; }
+    tfoot td.num { text-align: right; }
 
-    .badge {
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 12px;
-      font-size: .7rem;
-      font-weight: 700;
-    }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 12px; font-size: .68rem; font-weight: 700; }
     .badge-green  { background: #d5f5e3; color: #1e8449; }
     .badge-yellow { background: #fef9e7; color: #b7950b; }
     .badge-red    { background: #fde8e8; color: #c0392b; }
+    #empty { text-align: center; padding: 36px; color: #aaa; font-size: .88rem; }
 
-    /* LOADER */
+    /* ════ ADMIN ════ */
+    #viewAdmin { background: var(--bg); }
+    .admin-content { padding: 20px 24px 40px; }
+    .admin-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+    }
+    .admin-toolbar h2 { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+    .btn-new {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 8px; padding: 9px 18px;
+      font-size: .85rem; font-weight: 600; cursor: pointer;
+      transition: filter .15s;
+    }
+    .btn-new:hover { filter: brightness(1.15); }
+    .btn-new svg { width: 14px; height: 14px; }
+
+    .admin-table-wrap {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08); overflow: hidden;
+    }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .admin-table thead th {
+      background: var(--mid); color: #c8d6e5; font-weight: 600;
+      padding: 11px 14px; text-align: left; white-space: nowrap;
+    }
+    .admin-table tbody tr:nth-child(even) { background: #f8f9fb; }
+    .admin-table tbody tr:hover { background: #eef3fb; }
+    .admin-table td { padding: 10px 14px; border-bottom: 1px solid #eee; }
+    .admin-table td code {
+      background: #f0f2f5; padding: 2px 6px; border-radius: 4px;
+      font-size: .75rem; color: var(--blue);
+    }
+    .badge-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--blue); color: #fff;
+      width: 22px; height: 22px; border-radius: 50%;
+      font-size: .72rem; font-weight: 700;
+    }
+    .btn-icon {
+      background: #f0f2f5; border: none; border-radius: 6px;
+      padding: 5px 9px; cursor: pointer; font-size: .82rem;
+      transition: background .15s; margin-right: 4px;
+    }
+    .btn-icon:hover { background: #dde0e7; }
+    .btn-icon-danger:hover { background: #fde8e8; color: var(--red); }
+    .admin-empty { text-align: center; padding: 40px; color: #aaa; }
+
+    /* ════ MODAIS ════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 16px;
+    }
+    .modal {
+      background: #fff; border-radius: 14px;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+      display: flex; flex-direction: column;
+      max-height: 90vh;
+    }
+    .modal-lg { max-width: 680px; }
+    .modal-header {
+      padding: 18px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; color: var(--dark); }
+    .btn-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.3rem; color: #999; line-height: 1;
+      padding: 0 4px; transition: color .15s;
+    }
+    .btn-close:hover { color: var(--red); }
+    .modal-body {
+      padding: 20px; overflow-y: auto; flex: 1;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: center;
+    }
+    .modal-footer .spacer { flex: 1; }
+
+    /* form */
+    .form-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
+    .form-group label { font-size: .72rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: .4px; }
+    .form-group input {
+      border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 9px 11px; font-size: .875rem; color: var(--text);
+      outline: none; transition: border .15s; background: #fafbfc;
+    }
+    .form-group input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(15,52,96,.1); background: #fff; }
+
+    .form-section { border-top: 1px solid var(--border); padding-top: 14px; }
+    .form-section-title {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+      font-size: .72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--muted);
+    }
+    .btn-add-rel {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: 6px; padding: 5px 12px;
+      font-size: .75rem; font-weight: 600; cursor: pointer;
+      transition: filter .15s;
+    }
+    .btn-add-rel:hover { filter: brightness(1.15); }
+
+    .rel-row {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+    }
+    .rel-row input {
+      flex: 1; border: 1.5px solid var(--border); border-radius: 7px;
+      padding: 7px 10px; font-size: .82rem; outline: none;
+      transition: border .15s;
+    }
+    .rel-row input:focus { border-color: var(--blue); }
+
+    .form-error {
+      font-size: .78rem; color: var(--red); font-weight: 600;
+      min-height: 16px; text-align: center;
+    }
+
+    .btn-cancel { background: #f0f2f5; border: none; border-radius: 7px; padding: 9px 18px; font-size: .85rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .btn-cancel:hover { background: var(--border); }
+    .btn-save   { background: var(--blue); color: #fff; border: none; border-radius: 7px; padding: 9px 20px; font-size: .85rem; font-weight: 600; cursor: pointer; transition: filter .15s; }
+    .btn-save:hover { filter: brightness(1.15); }
+    .btn-danger { background: #fde8e8; color: var(--red); border: none; border-radius: 7px; padding: 9px 16px; font-size: .82rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .btn-danger:hover { background: #fbd0d0; }
+
+    /* loader */
     .loader {
-      display: inline-block;
-      width: 16px; height: 16px;
+      display: inline-block; width: 15px; height: 15px;
       border: 2.5px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
-      vertical-align: middle;
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .6s linear infinite; vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    #empty { text-align: center; padding: 40px; color: #aaa; font-size: .9rem; }
-
-    /* ── BOTÃO PDF ── */
-    .btn-pdf {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.35);
-      color: #fff;
-      border-radius: 6px;
-      font-size: .78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .btn-pdf:hover { background: rgba(255,255,255,.28); }
-    .btn-pdf svg { width: 14px; height: 14px; }
-
-    /* ════════════════════════════════════════════
-       IMPRESSÃO / PDF
-    ════════════════════════════════════════════ */
+    /* ════ IMPRESSÃO / PDF ════ */
     #printHeader { display: none; }
 
     @media print {
       @page { size: A4 landscape; margin: 10mm 12mm; }
 
-      #loginScreen,
-      header,
-      .panel,
-      #status,
-      .summary,
-      .btn-pdf             { display: none !important; }
+      #viewLogin, .app-header, .panel, #status, .summary, .btn-pdf { display: none !important; }
 
-      body                 { background: #fff; font-size: 8pt; }
-      #dashboard           { display: block !important; }
+      body { background: #fff; font-size: 8pt; }
+      #viewDashboard { display: block !important; min-height: unset; }
 
-      /* cabeçalho de impressão */
       #printHeader {
         display: flex !important;
         justify-content: space-between;
@@ -428,101 +426,58 @@
         padding-bottom: 6px;
         margin-bottom: 10px;
       }
-      #printHeader .ph-left h2 {
-        font-size: 13pt;
-        font-weight: 700;
-        color: #0f3460;
-        margin: 0;
-      }
-      #printHeader .ph-left p {
-        font-size: 8pt;
-        color: #555;
-        margin: 2px 0 0;
-      }
-      #printHeader .ph-right {
-        text-align: right;
-        font-size: 7.5pt;
-        color: #666;
-        line-height: 1.5;
-      }
+      #printHeader .ph-left h2 { font-size: 12pt; font-weight: 700; color: #0f3460; }
+      #printHeader .ph-left p  { font-size: 7.5pt; color: #555; margin-top: 3px; }
+      #printHeader .ph-right   { text-align: right; font-size: 7pt; color: #666; line-height: 1.6; }
 
-      /* relatório sem sombra */
-      .report-wrapper {
-        margin: 0;
-        box-shadow: none;
-        border: 1px solid #ddd;
-        border-radius: 0;
-      }
-      .report-header {
-        background: #0f3460 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        padding: 8px 14px;
-      }
-      .report-header h3  { font-size: 9pt; }
-      .report-header small { font-size: 7.5pt; }
+      .report-wrapper { margin: 0; box-shadow: none; border: 1px solid #ddd; border-radius: 0; }
+      .report-header { background: #0f3460 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 7px 12px; }
+      .report-header h3 { font-size: 8.5pt; }
+      .report-header small { font-size: 7pt; }
 
-      /* tabela compacta */
-      table { font-size: 7pt; }
-      thead th {
-        background: #16213e !important;
-        color: #c8d6e5 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        padding: 6px 8px;
-      }
-      tbody td { padding: 5px 8px; }
-      tbody tr:nth-child(even) {
-        background: #f4f6f9 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      tfoot tr td {
-        background: #0f3460 !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        padding: 6px 8px;
-        font-size: 7.5pt;
-      }
-
-      /* badges coloridos no PDF */
+      table { font-size: 6.5pt; }
+      thead th { background: #16213e !important; color: #c8d6e5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 5px 7px; }
+      tbody td { padding: 4px 7px; }
+      tbody tr:nth-child(even) { background: #f4f6f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      tfoot td { background: #0f3460 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 5px 7px; font-size: 7pt; }
       .badge-green  { background: #d5f5e3 !important; color: #1e8449 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .badge-yellow { background: #fef9e7 !important; color: #b7950b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .badge-red    { background: #fde8e8 !important; color: #c0392b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-      /* evita quebra de linha no meio de uma linha da tabela */
       tbody tr { page-break-inside: avoid; }
     }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════
-     TELA DE LOGIN
-════════════════════════════════════════════ -->
-<div id="loginScreen">
+<!-- ═══════════════════════════════════
+     VIEW: LOGIN
+════════════════════════════════════ -->
+<div id="viewLogin" class="view">
   <div class="login-card">
 
     <div class="login-logo">
       <div class="logo-mark">
-        <!-- ícone de gráfico de barras -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="10" width="4" height="12" rx="1"/>
-          <rect x="9" y="6"  width="4" height="16" rx="1"/>
-          <rect x="16" y="2" width="4" height="20" rx="1"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><rect x="2" y="10" width="4" height="12" rx="1"/><rect x="9" y="6" width="4" height="16" rx="1"/><rect x="16" y="2" width="4" height="20" rx="1"/></svg>
       </div>
-      <h1>SGB <span style="color:var(--accent)">BI</span></h1>
-      <p>Business Intelligence · Relatório de Vendas</p>
+      <h1>Simple <span style="color:var(--accent)">BI</span></h1>
+      <p>Business Intelligence Multi-Empresa</p>
+    </div>
+
+    <div class="login-field">
+      <label>Empresa</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        <select id="selEmpresa">
+          <option value="">— Selecione a empresa —</option>
+        </select>
+        <span class="select-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
     </div>
 
     <div class="login-field">
       <label>Usuário</label>
       <div class="input-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         <input type="text" id="lLogin" placeholder="Digite seu usuário" autocomplete="username" />
       </div>
     </div>
@@ -530,44 +485,51 @@
     <div class="login-field">
       <label>Senha</label>
       <div class="input-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="5" y="11" width="14" height="10" rx="2"/>
-          <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         <input type="password" id="lSenha" placeholder="••••••••" autocomplete="current-password" />
       </div>
     </div>
 
-    <div id="loginError"></div>
+    <div id="loginError" class="login-error"></div>
 
-    <button class="btn-login" id="btnLogin" onclick="fazerLogin()">
-      Entrar
-    </button>
+    <button class="btn-login" id="btnLogin" onclick="fazerLogin()">Entrar</button>
 
-    <div class="login-footer">SGB BI &copy; 2026 — acesso restrito</div>
+    <div class="login-footer">
+      <span>Simple BI &copy; 2026</span>
+      <button class="link-btn" onclick="abrirAdmin()">⚙ Administração</button>
+    </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     DASHBOARD
-════════════════════════════════════════════ -->
-<div id="dashboard">
+<!-- ═══════════════════════════════════
+     VIEW: DASHBOARD
+════════════════════════════════════ -->
+<div id="viewDashboard" class="view" style="display:none">
 
-  <header>
+  <div class="app-header">
     <div class="header-left">
-      <h1>Relatório de Vendas Sintético</h1>
-      <span class="tag">SGB BI</span>
+      <h1>Relatório de Vendas</h1>
+      <span class="header-tag">BI</span>
+      <span class="header-empresa" id="headerEmpresa"></span>
     </div>
-    <div class="header-user">
+    <div class="header-right">
       <div class="avatar" id="headerAvatar">?</div>
-      <span class="uname" id="headerNome">—</span>
-      <button class="btn-logout" onclick="sair()">Sair</button>
+      <span class="header-uname" id="headerNome">—</span>
+      <button class="btn-header" onclick="abrirAdmin()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Admin
+      </button>
+      <button class="btn-header" onclick="sair()">Sair</button>
     </div>
-  </header>
+  </div>
 
-  <!-- PAINEL DE PERÍODO -->
   <div class="panel">
-    <div class="panel-title">Configuração do Período</div>
+    <div class="panel-title">Configuração do Relatório</div>
+
+    <div class="field" id="fieldRelatorio" style="display:none">
+      <label>Relatório</label>
+      <select id="selRelatorio"></select>
+    </div>
 
     <div class="field">
       <label>Data inicial</label>
@@ -586,71 +548,46 @@
 
   <div id="status"></div>
 
-  <!-- CARDS DE RESUMO -->
   <div class="summary" id="summary" style="display:none">
-    <div class="card blue">
-      <label>Total de Grupos</label>
-      <div class="val" id="cardItens">0</div>
-    </div>
-    <div class="card green">
-      <label>Total Venda (R$)</label>
-      <div class="val" id="cardVenda">0,00</div>
-    </div>
-    <div class="card red">
-      <label>Total Custo (R$)</label>
-      <div class="val" id="cardCusto">0,00</div>
-    </div>
-    <div class="card">
-      <label>Margem Bruta (R$)</label>
-      <div class="val" id="cardMargem">0,00</div>
-    </div>
-    <div class="card">
-      <label>Margem (%)</label>
-      <div class="val" id="cardMargemPct">0%</div>
-    </div>
+    <div class="card blue"><label>Total de Grupos</label><div class="val" id="cardItens">0</div></div>
+    <div class="card green"><label>Total Venda (R$)</label><div class="val" id="cardVenda">0,00</div></div>
+    <div class="card red"><label>Total Custo (R$)</label><div class="val" id="cardCusto">0,00</div></div>
+    <div class="card"><label>Margem Bruta (R$)</label><div class="val" id="cardMargem">0,00</div></div>
+    <div class="card"><label>Margem (%)</label><div class="val" id="cardMargemPct">0%</div></div>
   </div>
 
-  <!-- TABELA -->
   <div class="report-wrapper" id="reportWrapper" style="display:none">
 
-    <!-- cabeçalho visível apenas no PDF/impressão -->
     <div id="printHeader">
       <div class="ph-left">
-        <h2>SGB BI — Relatório de Vendas Sintético</h2>
+        <h2>Simple BI — <span id="phEmpresa"></span></h2>
         <p id="phPeriodo"></p>
       </div>
       <div class="ph-right">
+        <div>Relatório: <strong id="phRelatorio"></strong></div>
         <div>Usuário: <strong id="phUsuario"></strong></div>
-        <div>Emitido em: <strong id="phDataHora"></strong></div>
+        <div>Emitido: <strong id="phDataHora"></strong></div>
       </div>
     </div>
 
     <div class="report-header">
-      <h3>Vendas por Produto / Vendedor / Cliente</h3>
-      <div style="display:flex;align-items:center;gap:12px">
+      <h3 id="reportTitulo">Relatório de Vendas Sintético</h3>
+      <div class="report-header-right">
         <small id="reportPeriodo"></small>
         <button class="btn-pdf" onclick="gerarPDF()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="12" y1="18" x2="12" y2="12"/>
-            <polyline points="9 15 12 18 15 15"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
           Exportar PDF
         </button>
       </div>
     </div>
+
     <div class="table-scroll">
       <table>
         <thead>
           <tr>
-            <th>Cód. Prod.</th>
-            <th>Descrição</th>
-            <th>Cód. Vend.</th>
-            <th>Vendedor</th>
-            <th>Cód. Cli.</th>
-            <th>Cliente</th>
-            <th>CEP</th>
+            <th>Cód. Prod.</th><th>Descrição</th>
+            <th>Cód. Vend.</th><th>Vendedor</th>
+            <th>Cód. Cli.</th><th>Cliente</th><th>CEP</th>
             <th class="num">Qtde.</th>
             <th class="num">Custo (R$)</th>
             <th class="num">Venda (R$)</th>
@@ -672,21 +609,185 @@
     </div>
   </div>
 
-</div><!-- /dashboard -->
+</div><!-- /viewDashboard -->
 
+<!-- ═══════════════════════════════════
+     VIEW: ADMIN
+════════════════════════════════════ -->
+<div id="viewAdmin" class="view" style="display:none">
+
+  <div class="app-header">
+    <div class="header-left">
+      <h1>Painel Administrativo</h1>
+      <span class="header-tag">Admin</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-header" onclick="abrirAlterarSenha()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Alterar Senha
+      </button>
+      <button class="btn-header" onclick="voltarDashboard()">← Voltar</button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="admin-toolbar">
+      <h2>Empresas Cadastradas</h2>
+      <button class="btn-new" onclick="abrirModalEmpresa(null)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova Empresa
+      </button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>URL Base da API</th>
+            <th>Login Endpoint</th>
+            <th style="text-align:center">Relatórios</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyAdmin">
+          <tr><td colspan="5" class="admin-empty">Carregando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /viewAdmin -->
+
+<!-- ═══════════════════════════════════
+     MODAL: ADMIN AUTH
+════════════════════════════════════ -->
+<div id="modalAdminAuth" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>⚙ Acesso Administrativo</h3>
+      <button class="btn-close" onclick="hideModal('modalAdminAuth')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Senha de Administrador</label>
+        <input type="password" id="adminSenha" placeholder="••••••••" />
+      </div>
+      <div id="adminAuthError" class="form-error"></div>
+    </div>
+    <div class="modal-footer">
+      <div class="spacer"></div>
+      <button class="btn-cancel" onclick="hideModal('modalAdminAuth')">Cancelar</button>
+      <button class="btn-save" onclick="confirmarAdminAuth()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODAL: ALTERAR SENHA ADMIN
+════════════════════════════════════ -->
+<div id="modalAlterarSenha" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Alterar Senha de Administrador</h3>
+      <button class="btn-close" onclick="hideModal('modalAlterarSenha')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Senha Atual</label>
+        <input type="password" id="senhaAtual" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label>Nova Senha</label>
+        <input type="password" id="senhaNova" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label>Confirmar Nova Senha</label>
+        <input type="password" id="senhaNovaConf" placeholder="••••••••" />
+      </div>
+      <div id="alterarSenhaError" class="form-error"></div>
+    </div>
+    <div class="modal-footer">
+      <div class="spacer"></div>
+      <button class="btn-cancel" onclick="hideModal('modalAlterarSenha')">Cancelar</button>
+      <button class="btn-save" onclick="confirmarAlterarSenha()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODAL: EMPRESA (criar / editar)
+════════════════════════════════════ -->
+<div id="modalEmpresa" class="modal-overlay" style="display:none">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="modalEmpTitle">Nova Empresa</h3>
+      <button class="btn-close" onclick="hideModal('modalEmpresa')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="empId" />
+
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <label>Nome da Empresa *</label>
+          <input type="text" id="empNome" placeholder="Ex: Empresa XYZ" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:3">
+          <label>URL Base da API *</label>
+          <input type="text" id="empApiBase" placeholder="http://api.empresa.com/prefixo" />
+        </div>
+        <div class="form-group" style="flex:2">
+          <label>Endpoint de Login *</label>
+          <input type="text" id="empLoginEp" placeholder="/usuario/login" />
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">
+          <span>Relatórios</span>
+          <button class="btn-add-rel" onclick="addRelRow()">+ Adicionar</button>
+        </div>
+        <div id="relRows"></div>
+        <div id="relRowsEmpty" style="font-size:.8rem;color:var(--muted);text-align:center;padding:10px 0">
+          Nenhum relatório. Clique em "+ Adicionar".
+        </div>
+      </div>
+
+      <div id="modalEmpError" class="form-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="btnExcluirEmp" class="btn-danger" onclick="excluirEmpresaAtual()" style="display:none">🗑 Excluir</button>
+      <div class="spacer"></div>
+      <button class="btn-cancel" onclick="hideModal('modalEmpresa')">Cancelar</button>
+      <button class="btn-save" onclick="salvarEmpresa()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════ -->
 <script>
-  const API_BASE = 'http://localhost:3007/sgbrbi';
-
-  // token guardado em memória (limpo ao fechar/recarregar)
-  let _token = null;
+  // ── ESTADO ───────────────────────────────────────────────────────────────
+  let _token       = null;
   let _nomeUsuario = '';
+  let _empresa     = null;
+  let _relatorio   = null;
+  let _adminAuthed = false;
 
-  // ── UTILITÁRIOS ──────────────────────────────────────────────────────────
-
+  // ── UTILS ─────────────────────────────────────────────────────────────────
   const toNum    = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
   const fmtNum   = v => toNum(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmtPct   = v => toNum(v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
   const dateToApi = v => v.replace(/-/g, '.');
+
+  async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
   function setStatus(msg, type = '') {
     const el = document.getElementById('status');
@@ -699,30 +800,53 @@
     return `<span class="badge ${cls}">${fmtPct(pct)}</span>`;
   }
 
-  // ── SHA-256 ──────────────────────────────────────────────────────────────
+  // ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────
+  const DISPLAY = { viewLogin: 'flex', viewDashboard: 'block', viewAdmin: 'block' };
 
-  async function sha256(text) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+    document.getElementById(id).style.display = DISPLAY[id] || 'block';
   }
 
-  // ── TELA DE LOGIN ────────────────────────────────────────────────────────
+  function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function hideModal(id) { document.getElementById(id).style.display = 'none'; }
 
+  // ── EMPRESAS (carrega no select do login) ─────────────────────────────────
+  async function carregarEmpresas() {
+    try {
+      const res     = await fetch('/api/empresas');
+      const lista   = await res.json();
+      const sel     = document.getElementById('selEmpresa');
+      sel.innerHTML = '<option value="">— Selecione a empresa —</option>';
+      lista.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value       = JSON.stringify(e);
+        opt.textContent = e.nome;
+        sel.appendChild(opt);
+      });
+    } catch { /* servidor não iniciado: ignora */ }
+  }
+
+  // ── LOGIN ─────────────────────────────────────────────────────────────────
   async function fazerLogin() {
+    const selVal   = document.getElementById('selEmpresa').value;
     const loginVal = document.getElementById('lLogin').value.trim();
     const senhaVal = document.getElementById('lSenha').value;
     const errEl    = document.getElementById('loginError');
     const btn      = document.getElementById('btnLogin');
 
     errEl.textContent = '';
-    if (!loginVal || !senhaVal) { errEl.textContent = 'Preencha usuário e senha.'; return; }
+    if (!selVal)   { errEl.textContent = 'Selecione a empresa.'; return; }
+    if (!loginVal) { errEl.textContent = 'Informe o usuário.';   return; }
+    if (!senhaVal) { errEl.textContent = 'Informe a senha.';     return; }
 
+    _empresa     = JSON.parse(selVal);
     btn.disabled = true;
     btn.innerHTML = '<span class="loader"></span> Entrando…';
 
     try {
       const hash = await sha256(senhaVal);
-      const res  = await fetch(`${API_BASE}/usuario/login`, {
+      const res  = await fetch(`${_empresa.api_base}${_empresa.login_endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login: loginVal, senha: hash })
@@ -731,59 +855,266 @@
       const data = await res.json();
       if (!data.token) throw new Error('Token não recebido.');
 
-      _token = data.token;
+      _token       = data.token;
       _nomeUsuario = data.nome_usuario || loginVal;
 
-      // atualiza header do dashboard
-      document.getElementById('headerNome').textContent = _nomeUsuario;
-      document.getElementById('headerAvatar').textContent = _nomeUsuario.charAt(0).toUpperCase();
+      document.getElementById('headerNome').textContent    = _nomeUsuario;
+      document.getElementById('headerAvatar').textContent  = _nomeUsuario.charAt(0).toUpperCase();
+      document.getElementById('headerEmpresa').textContent = _empresa.nome;
 
-      // transição: oculta login, mostra dashboard
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('dashboard').classList.add('visible');
+      // monta seletor de relatórios
+      const rels   = _empresa.relatorios || [];
+      const selRel = document.getElementById('selRelatorio');
+      selRel.innerHTML = '';
+      rels.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value       = JSON.stringify(r);
+        opt.textContent = r.nome;
+        selRel.appendChild(opt);
+      });
+      document.getElementById('fieldRelatorio').style.display = rels.length > 1 ? '' : 'none';
+      _relatorio = rels[0] || null;
 
+      showView('viewDashboard');
     } catch (err) {
       errEl.textContent = err.message;
     } finally {
-      btn.disabled = false;
+      btn.disabled  = false;
       btn.textContent = 'Entrar';
     }
   }
 
   function sair() {
-    _token = null;
-    _nomeUsuario = '';
+    _token = null; _nomeUsuario = ''; _empresa = null; _relatorio = null;
     document.getElementById('lSenha').value = '';
     document.getElementById('loginError').textContent = '';
     document.getElementById('summary').style.display = 'none';
     document.getElementById('reportWrapper').style.display = 'none';
     document.getElementById('status').textContent = '';
     document.getElementById('tbody').innerHTML = '';
-    document.getElementById('loginScreen').classList.remove('hidden');
-    document.getElementById('dashboard').classList.remove('visible');
+    showView('viewLogin');
   }
 
-  // ── VENDAS ───────────────────────────────────────────────────────────────
+  function voltarDashboard() {
+    if (_token) showView('viewDashboard');
+    else        showView('viewLogin');
+  }
 
+  // ── ADMIN AUTH ────────────────────────────────────────────────────────────
+  function abrirAdmin() {
+    if (_adminAuthed) {
+      carregarAdminEmpresas();
+      showView('viewAdmin');
+      return;
+    }
+    document.getElementById('adminSenha').value = '';
+    document.getElementById('adminAuthError').textContent = '';
+    showModal('modalAdminAuth');
+  }
+
+  async function confirmarAdminAuth() {
+    const senhaVal = document.getElementById('adminSenha').value;
+    const errEl    = document.getElementById('adminAuthError');
+    if (!senhaVal) { errEl.textContent = 'Informe a senha.'; return; }
+
+    try {
+      const hash = await sha256(senhaVal);
+      const res  = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha_hash: hash })
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        errEl.textContent = d.erro || 'Senha incorreta.';
+        return;
+      }
+      _adminAuthed = true;
+      hideModal('modalAdminAuth');
+      await carregarAdminEmpresas();
+      showView('viewAdmin');
+    } catch {
+      errEl.textContent = 'Erro de conexão com o servidor.';
+    }
+  }
+
+  // ── ALTERAR SENHA ADMIN ───────────────────────────────────────────────────
+  function abrirAlterarSenha() {
+    ['senhaAtual','senhaNova','senhaNovaConf'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('alterarSenhaError').textContent = '';
+    showModal('modalAlterarSenha');
+  }
+
+  async function confirmarAlterarSenha() {
+    const atual = document.getElementById('senhaAtual').value;
+    const nova  = document.getElementById('senhaNova').value;
+    const conf  = document.getElementById('senhaNovaConf').value;
+    const errEl = document.getElementById('alterarSenhaError');
+    errEl.textContent = '';
+
+    if (!atual || !nova || !conf) { errEl.textContent = 'Preencha todos os campos.'; return; }
+    if (nova !== conf) { errEl.textContent = 'Nova senha não confere.'; return; }
+    if (nova.length < 4) { errEl.textContent = 'Nova senha deve ter ao menos 4 caracteres.'; return; }
+
+    try {
+      const [hAtual, hNova] = await Promise.all([sha256(atual), sha256(nova)]);
+      const res = await fetch('/api/admin/senha', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha_hash_atual: hAtual, senha_hash_nova: hNova })
+      });
+      if (!res.ok) { const d = await res.json(); errEl.textContent = d.erro || 'Erro.'; return; }
+      hideModal('modalAlterarSenha');
+      alert('Senha alterada com sucesso!');
+    } catch {
+      errEl.textContent = 'Erro de conexão.';
+    }
+  }
+
+  // ── ADMIN: LISTA DE EMPRESAS ──────────────────────────────────────────────
+  async function carregarAdminEmpresas() {
+    try {
+      const res    = await fetch('/api/empresas');
+      const lista  = await res.json();
+      const tbody  = document.getElementById('tbodyAdmin');
+
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="admin-empty">Nenhuma empresa cadastrada.</td></tr>';
+        await carregarEmpresas();
+        return;
+      }
+
+      tbody.innerHTML = '';
+      lista.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${e.nome}</strong></td>
+          <td><code>${e.api_base}</code></td>
+          <td><code>${e.login_endpoint}</code></td>
+          <td style="text-align:center"><span class="badge-count">${(e.relatorios || []).length}</span></td>
+          <td>
+            <button class="btn-icon" title="Editar" onclick='abrirModalEmpresa(${JSON.stringify(e)})'>✎ Editar</button>
+            <button class="btn-icon btn-icon-danger" title="Excluir" onclick="excluirEmpresa(${e.id})">🗑</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+
+      await carregarEmpresas(); // atualiza select do login
+    } catch {
+      document.getElementById('tbodyAdmin').innerHTML =
+        '<tr><td colspan="5" class="admin-empty" style="color:var(--red)">Erro ao conectar com o servidor.</td></tr>';
+    }
+  }
+
+  // ── MODAL EMPRESA ─────────────────────────────────────────────────────────
+  function abrirModalEmpresa(empresa) {
+    document.getElementById('empId').value      = empresa?.id ?? '';
+    document.getElementById('empNome').value    = empresa?.nome ?? '';
+    document.getElementById('empApiBase').value = empresa?.api_base ?? '';
+    document.getElementById('empLoginEp').value = empresa?.login_endpoint ?? '/usuario/login';
+    document.getElementById('modalEmpTitle').textContent = empresa ? 'Editar Empresa' : 'Nova Empresa';
+    document.getElementById('btnExcluirEmp').style.display = empresa ? '' : 'none';
+    document.getElementById('modalEmpError').textContent = '';
+
+    const container = document.getElementById('relRows');
+    container.innerHTML = '';
+    (empresa?.relatorios ?? []).forEach(r => addRelRow(r));
+    syncRelRowsEmpty();
+
+    showModal('modalEmpresa');
+  }
+
+  function addRelRow(rel = null) {
+    const div = document.createElement('div');
+    div.className = 'rel-row';
+    div.innerHTML = `
+      <input type="text" placeholder="Nome do relatório" value="${rel?.nome ?? ''}" class="rel-nome" />
+      <input type="text" placeholder="/endpoint" value="${rel?.endpoint ?? ''}" class="rel-endpoint" />
+      <button class="btn-icon btn-icon-danger" onclick="this.parentElement.remove(); syncRelRowsEmpty()">×</button>`;
+    document.getElementById('relRows').appendChild(div);
+    syncRelRowsEmpty();
+  }
+
+  function syncRelRowsEmpty() {
+    const n = document.getElementById('relRows').children.length;
+    document.getElementById('relRowsEmpty').style.display = n === 0 ? '' : 'none';
+  }
+
+  async function salvarEmpresa() {
+    const id           = document.getElementById('empId').value;
+    const nome         = document.getElementById('empNome').value.trim();
+    const api_base     = document.getElementById('empApiBase').value.trim();
+    const login_endpoint = document.getElementById('empLoginEp').value.trim();
+    const errEl        = document.getElementById('modalEmpError');
+
+    errEl.textContent = '';
+    if (!nome || !api_base || !login_endpoint) {
+      errEl.textContent = 'Preencha todos os campos obrigatórios.'; return;
+    }
+
+    const relatorios = [...document.querySelectorAll('.rel-row')].map(row => ({
+      nome:     row.querySelector('.rel-nome').value.trim(),
+      endpoint: row.querySelector('.rel-endpoint').value.trim(),
+    })).filter(r => r.nome && r.endpoint);
+
+    const url    = id ? `/api/empresas/${id}` : '/api/empresas';
+    const method = id ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, api_base, login_endpoint, relatorios })
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        errEl.textContent = d.erro || 'Erro ao salvar.';
+        return;
+      }
+      hideModal('modalEmpresa');
+      await carregarAdminEmpresas();
+    } catch {
+      errEl.textContent = 'Erro de conexão.';
+    }
+  }
+
+  async function excluirEmpresaAtual() {
+    const id = document.getElementById('empId').value;
+    if (!id || !confirm('Excluir esta empresa e todos os seus relatórios?')) return;
+    await fetch(`/api/empresas/${id}`, { method: 'DELETE' });
+    hideModal('modalEmpresa');
+    await carregarAdminEmpresas();
+  }
+
+  async function excluirEmpresa(id) {
+    if (!confirm('Excluir esta empresa e todos os seus relatórios?')) return;
+    await fetch(`/api/empresas/${id}`, { method: 'DELETE' });
+    await carregarAdminEmpresas();
+  }
+
+  // ── DADOS DE VENDAS ───────────────────────────────────────────────────────
   async function fetchVendas(dtDe, dtAte) {
-    const url = `${API_BASE}/vendas/analitico?dt_de=${dtDe}&dt_ate=${dtAte}`;
+    const selVal = document.getElementById('selRelatorio').value;
+    if (selVal) _relatorio = JSON.parse(selVal);
+
+    const url = `${_empresa.api_base}${_relatorio.endpoint}?dt_de=${dtDe}&dt_ate=${dtAte}`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${_token}` } });
-    if (!res.ok) throw new Error(`Erro ao buscar vendas (HTTP ${res.status})`);
+    if (!res.ok) throw new Error(`Erro ao buscar dados (HTTP ${res.status})`);
     return res.json();
   }
 
   // ── AGRUPAMENTO ───────────────────────────────────────────────────────────
-
   function agrupar(rows) {
     const map = new Map();
+    const str = v => v ?? '';
     for (const r of rows) {
       const key = `${r.codprod}|${r.codvendedor}|${r.codcliente}`;
       if (!map.has(key)) {
         map.set(key, {
-          codprod: r.codprod      ?? '—', decprod: r.decprod           ?? '—',
+          codprod: r.codprod ?? '—',      decprod: r.decprod ?? '—',
           codvendedor: r.codvendedor ?? '—', nomevendedor: r.nomevendedor ?? '—',
-          codcliente: r.codcliente  ?? '—', nomecliente: r.nomecliente   ?? '—',
-          cepcliente: r.cepcliente  ?? '—',
+          codcliente: r.codcliente ?? '—',  nomecliente: r.nomecliente ?? '—',
+          cepcliente: r.cepcliente ?? '—',
           qtde: 0, custo: 0, venda: 0,
         });
       }
@@ -793,7 +1124,6 @@
       g.custo += q * toNum(r.precocustoitem);
       g.venda += q * toNum(r.valorunit);
     }
-    const str = v => v ?? '';
     return [...map.values()].sort((a, b) =>
       str(a.nomevendedor).localeCompare(str(b.nomevendedor)) ||
       str(a.decprod).localeCompare(str(b.decprod))
@@ -801,7 +1131,6 @@
   }
 
   // ── RENDERIZAÇÃO ──────────────────────────────────────────────────────────
-
   function renderizar(grupos, dtDe, dtAte) {
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
@@ -823,12 +1152,9 @@
       const margem = g.venda > 0 ? ((g.venda - g.custo) / g.venda) * 100 : 0;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${g.codprod}</td>
-        <td>${g.decprod}</td>
-        <td>${g.codvendedor}</td>
-        <td>${g.nomevendedor}</td>
-        <td>${g.codcliente}</td>
-        <td>${g.nomecliente}</td>
+        <td>${g.codprod}</td><td>${g.decprod}</td>
+        <td>${g.codvendedor}</td><td>${g.nomevendedor}</td>
+        <td>${g.codcliente}</td><td>${g.nomecliente}</td>
         <td>${g.cepcliente}</td>
         <td class="num">${fmtNum(g.qtde)}</td>
         <td class="num">${fmtNum(g.custo)}</td>
@@ -852,37 +1178,27 @@
     const fmtDate = d => d.split('.').reverse().join('/');
     const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)} — ${grupos.length} grupos`;
     document.getElementById('reportPeriodo').textContent = periodo;
+    document.getElementById('reportTitulo').textContent  = _relatorio?.nome ?? 'Relatório';
 
-    // preenche cabeçalho de impressão
-    document.getElementById('phPeriodo').textContent   = periodo;
-    document.getElementById('phUsuario').textContent   = _nomeUsuario;
-    document.getElementById('phDataHora').textContent  =
+    document.getElementById('phEmpresa').textContent  = _empresa?.nome ?? '';
+    document.getElementById('phRelatorio').textContent = _relatorio?.nome ?? '';
+    document.getElementById('phPeriodo').textContent  = periodo;
+    document.getElementById('phUsuario').textContent  = _nomeUsuario;
+    document.getElementById('phDataHora').textContent =
       new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 
     document.getElementById('summary').style.display = 'flex';
     document.getElementById('reportWrapper').style.display = '';
   }
 
-  // ── GERAR PDF ────────────────────────────────────────────────────────────
-
-  function gerarPDF() {
-    // define o título da aba/janela temporariamente para nomear o arquivo
-    const original = document.title;
-    const periodo  = document.getElementById('reportPeriodo').textContent
-      .replace('Período: ', '').split(' —')[0].replace(/\//g, '-');
-    document.title = `Vendas_${periodo}`;
-    window.print();
-    document.title = original;
-  }
-
   // ── GERAR RELATÓRIO ───────────────────────────────────────────────────────
-
   async function gerarRelatorio() {
     const dtDeRaw  = document.getElementById('dt_de').value;
     const dtAteRaw = document.getElementById('dt_ate').value;
 
     if (!dtDeRaw || !dtAteRaw) { setStatus('Selecione o período.', 'error'); return; }
     if (dtDeRaw > dtAteRaw)    { setStatus('Data inicial deve ser ≤ data final.', 'error'); return; }
+    if (!_relatorio)           { setStatus('Nenhum relatório configurado para esta empresa.', 'error'); return; }
 
     const btn = document.getElementById('btnGerar');
     btn.disabled = true;
@@ -891,23 +1207,31 @@
     document.getElementById('reportWrapper').style.display = 'none';
 
     try {
-      setStatus('Buscando dados de vendas…');
-      const rows  = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      setStatus('Buscando dados…');
+      const rows   = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw));
       const grupos = agrupar(rows);
       renderizar(grupos, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
       setStatus(`Relatório gerado — ${grupos.length} grupo(s).`, 'ok');
     } catch (err) {
       setStatus(err.message, 'error');
     } finally {
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Gerar Relatório';
     }
   }
 
-  // ── INICIALIZAÇÃO ─────────────────────────────────────────────────────────
+  // ── PDF ───────────────────────────────────────────────────────────────────
+  function gerarPDF() {
+    const original = document.title;
+    const periodo  = document.getElementById('reportPeriodo').textContent
+      .replace('Período: ', '').split(' —')[0].replace(/\//g, '-');
+    document.title = `${_empresa?.nome ?? 'BI'}_${_relatorio?.nome ?? 'Relatorio'}_${periodo}`;
+    window.print();
+    document.title = original;
+  }
 
+  // ── INIT ──────────────────────────────────────────────────────────────────
   (function init() {
-    // pré-preenche período com últimos 7 dias
     const hoje = new Date();
     const sete = new Date(hoje);
     sete.setDate(sete.getDate() - 7);
@@ -915,13 +1239,12 @@
     document.getElementById('dt_de').value  = iso(sete);
     document.getElementById('dt_ate').value = iso(hoje);
 
-    // Enter no campo de senha dispara o login
-    document.getElementById('lSenha').addEventListener('keydown', e => {
-      if (e.key === 'Enter') fazerLogin();
-    });
-    document.getElementById('lLogin').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('lSenha').focus();
-    });
+    document.getElementById('lLogin').addEventListener('keydown',   e => { if (e.key === 'Enter') document.getElementById('lSenha').focus(); });
+    document.getElementById('lSenha').addEventListener('keydown',   e => { if (e.key === 'Enter') fazerLogin(); });
+    document.getElementById('adminSenha').addEventListener('keydown', e => { if (e.key === 'Enter') confirmarAdminAuth(); });
+    document.getElementById('selRelatorio').addEventListener('change', e => { _relatorio = JSON.parse(e.target.value); });
+
+    carregarEmpresas();
   })();
 </script>
 
