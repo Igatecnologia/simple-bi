@@ -1,0 +1,14 @@
+services:
+  simple-bi:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - bi-data:/app/data
+    environment:
+      - PORT=3001
+      - DB_PATH=/app/data/bi.db
+    restart: unless-stopped
+
+volumes:
+  bi-data:

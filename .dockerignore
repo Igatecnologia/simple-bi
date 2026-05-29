@@ -1,0 +1,6 @@
+node_modules
+bi.db
+.git
+.gitignore
+docker-compose.yml
+*.md
