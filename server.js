@@ -85,21 +85,6 @@ app.delete('/api/empresas/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-// ── PROXY (evita Mixed Content HTTPS → HTTP) ─────────────────────────────
-app.post('/api/proxy', async (req, res) => {
-  const { url, method = 'GET', headers = {}, body } = req.body;
-  if (!url) return res.status(400).json({ erro: 'URL não informada.' });
-  try {
-    const opts = { method, headers: { 'Content-Type': 'application/json', ...headers } };
-    if (body) opts.body = JSON.stringify(body);
-    const r = await fetch(url, opts);
-    const data = await r.json();
-    res.status(r.status).json(data);
-  } catch {
-    res.status(502).json({ erro: 'Não foi possível conectar à API externa.' });
-  }
-});
-
 // ── START ─────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3001;
