@@ -847,10 +847,14 @@
 
     try {
       const hash = await sha256(senhaVal);
-      const res  = await fetch(`${_empresa.api_base}${_empresa.login_endpoint}`, {
+      const res  = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login: loginVal, senha: hash })
+        body: JSON.stringify({
+          url: `${_empresa.api_base}${_empresa.login_endpoint}`,
+          method: 'POST',
+          body: { login: loginVal, senha: hash }
+        })
       });
       if (!res.ok) throw new Error('Usuário ou senha incorretos.');
       const data = await res.json();
@@ -1080,8 +1084,15 @@
   async function fetchVendas(dtDe, dtAte, relSelId) {
     const selVal = document.getElementById(relSelId).value;
     if (selVal) _relatorio = JSON.parse(selVal);
-    const url = `${_empresa.api_base}${_relatorio.endpoint}?dt_de=${dtDe}&dt_ate=${dtAte}`;
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${_token}` } });
+    const res = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: `${_empresa.api_base}${_relatorio.endpoint}?dt_de=${dtDe}&dt_ate=${dtAte}`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${_token}` }
+      })
+    });
     if (!res.ok) throw new Error(`Erro ao buscar dados (HTTP ${res.status})`);
     return res.json();
   }
