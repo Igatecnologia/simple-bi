@@ -33,9 +33,14 @@ db.exec(`
   );
 `);
 
-// migração: adiciona coluna usuario se não existir (banco já criado sem ela)
+// migração: adiciona coluna usuario se não existir
 try {
   db.exec("ALTER TABLE admin_config ADD COLUMN usuario TEXT NOT NULL DEFAULT 'admin'");
+} catch (_) { /* coluna já existe */ }
+
+// migração: adiciona coluna tipo em relatorios
+try {
+  db.exec("ALTER TABLE relatorios ADD COLUMN tipo TEXT NOT NULL DEFAULT 'vendas'");
 } catch (_) { /* coluna já existe */ }
 
 // credenciais padrão: admin / admin  →  sha256("admin")
@@ -57,6 +62,9 @@ if (empCount.n === 0) {
   db.prepare(
     'INSERT INTO relatorios (empresa_id, nome, endpoint) VALUES (?, ?, ?)'
   ).run(r.lastInsertRowid, 'Vendas Sintético', '/vendas/analitico');
+
+  db.prepare('INSERT INTO relatorios (empresa_id, nome, endpoint) VALUES (?, ?, ?)'
+  ).run(r.lastInsertRowid, 'Produção', '/produzido');
 }
 
 module.exports = db;
