@@ -1612,10 +1612,9 @@
 
     try {
       setRelStatus('Buscando dados…');
-      const rows   = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelatorio');
-      const grupos = agrupar(rows);
-      renderTabela(grupos, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
-      setRelStatus(`Relatório gerado — ${grupos.length} grupo(s).`, 'ok');
+      const rows = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelatorio');
+      renderTabela(rows, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      setRelStatus(`Relatório gerado — ${rows.length} registro(s).`, 'ok');
     } catch (err) {
       setRelStatus(err.message, 'error');
     } finally {
@@ -1624,12 +1623,12 @@
     }
   }
 
-  function renderTabela(grupos, dtDe, dtAte) {
-    _gruposVendas = grupos;
+  function renderTabela(rows, dtDe, dtAte) {
+    _gruposVendas = rows;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
 
-    if (!grupos.length) {
+    if (!rows.length) {
       document.getElementById('tblEmpty').style.display = '';
       document.getElementById('tfootRow').style.display = 'none';
       return;
@@ -1638,46 +1637,49 @@
     document.getElementById('tfootRow').style.display = '';
 
     let totQtde = 0, totCusto = 0, totVenda = 0;
-    grupos.forEach(g => {
-      totQtde += g.qtde; totCusto += g.custo; totVenda += g.venda;
-      const margem = g.venda > 0 ? ((g.venda - g.custo) / g.venda) * 100 : 0;
+    rows.forEach(r => {
+      const qtde  = toNum(r.qtdevendida);
+      const custo = qtde * toNum(r.precocustoitem);
+      const venda = qtde * toNum(r.valorunit);
+      totQtde += qtde; totCusto += custo; totVenda += venda;
+      const margem = venda > 0 ? ((venda - custo) / venda) * 100 : 0;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${g.codprod}</td><td>${g.decprod}</td>
-        <td>${g.codvendedor}</td><td>${g.nomevendedor}</td>
-        <td>${g.codcliente}</td><td>${g.nomecliente}</td>
-        <td>${g.cepcliente}</td>
-        <td class="num">${fmtNum(g.qtde)}</td>
-        <td class="num">${fmtNum(g.custo)}</td>
-        <td class="num">${fmtNum(g.venda)}</td>
+        <td>${r.codprod ?? '—'}</td><td>${r.descproditemvenda ?? '—'}</td>
+        <td>${r.codvendedor ?? '—'}</td><td>${r.nomevendedor ?? '—'}</td>
+        <td>${r.codcliente ?? '—'}</td><td>${r.nomecliente ?? '—'}</td>
+        <td>${r.cepcliente ?? '—'}</td>
+        <td class="num">${fmtNum(qtde)}</td>
+        <td class="num">${fmtNum(custo)}</td>
+        <td class="num">${fmtNum(venda)}</td>
         <td class="num">${badgeMargem(margem)}</td>`;
       tbody.appendChild(tr);
     });
 
     const totMargem = totVenda > 0 ? ((totVenda - totCusto) / totVenda) * 100 : 0;
-    document.getElementById('ftQtde').textContent  = fmtNum(totQtde);
-    document.getElementById('ftCusto').textContent = 'R$ ' + fmtNum(totCusto);
-    document.getElementById('ftVenda').textContent = 'R$ ' + fmtNum(totVenda);
+    document.getElementById('ftQtde').textContent   = fmtNum(totQtde);
+    document.getElementById('ftCusto').textContent  = 'R$ ' + fmtNum(totCusto);
+    document.getElementById('ftVenda').textContent  = 'R$ ' + fmtNum(totVenda);
     document.getElementById('ftMargem').textContent = fmtPct(totMargem);
 
-    document.getElementById('cardItens').textContent = grupos.length;
-    document.getElementById('cardVenda').textContent  = 'R$ ' + fmtNum(totVenda);
-    document.getElementById('cardCusto').textContent  = 'R$ ' + fmtNum(totCusto);
-    document.getElementById('cardMargem').textContent = 'R$ ' + fmtNum(totVenda - totCusto);
+    document.getElementById('cardItens').textContent     = rows.length;
+    document.getElementById('cardVenda').textContent     = 'R$ ' + fmtNum(totVenda);
+    document.getElementById('cardCusto').textContent     = 'R$ ' + fmtNum(totCusto);
+    document.getElementById('cardMargem').textContent    = 'R$ ' + fmtNum(totVenda - totCusto);
     document.getElementById('cardMargemPct').textContent = fmtPct(totMargem);
 
     const fmtDate = d => d.split('.').reverse().join('/');
-    const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)} — ${grupos.length} grupos`;
+    const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)} — ${rows.length} registro(s)`;
     document.getElementById('reportPeriodo').textContent = periodo;
     document.getElementById('reportTitulo').textContent  = _relatorio?.nome ?? 'Relatório';
-    document.getElementById('phEmpresa').textContent   = _empresa?.nome ?? '';
-    document.getElementById('phRelatorio').textContent = _relatorio?.nome ?? '';
-    document.getElementById('phPeriodo').textContent   = periodo;
-    document.getElementById('phUsuario').textContent   = _nomeUsuario;
-    document.getElementById('phDataHora').textContent  =
+    document.getElementById('phEmpresa').textContent     = _empresa?.nome ?? '';
+    document.getElementById('phRelatorio').textContent   = _relatorio?.nome ?? '';
+    document.getElementById('phPeriodo').textContent     = periodo;
+    document.getElementById('phUsuario').textContent     = _nomeUsuario;
+    document.getElementById('phDataHora').textContent    =
       new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 
-    document.getElementById('summary').style.display = 'flex';
+    document.getElementById('summary').style.display      = 'flex';
     document.getElementById('reportWrapper').style.display = '';
   }
 
@@ -2204,14 +2206,17 @@
   function exportarCSVVendas() {
     if (!_gruposVendas.length) return;
     const periodo = document.getElementById('reportPeriodo').textContent
-      .replace('Periodo: ', '').split(' —')[0].replace(/\//g, '-');
+      .replace('Período: ', '').split(' —')[0].replace(/\//g, '-');
     const header = ['Cod.Prod.','Descricao','Cod.Vend.','Vendedor','Cod.Cli.','Cliente','CEP',
                     'Qtde','Custo (R$)','Venda (R$)','Margem (%)'];
-    const data = _gruposVendas.map(g => {
-      const margem = g.venda > 0 ? ((g.venda - g.custo) / g.venda * 100) : 0;
-      return [g.codprod, g.decprod, g.codvendedor, g.nomevendedor,
-              g.codcliente, g.nomecliente, g.cepcliente,
-              g.qtde, g.custo.toFixed(2), g.venda.toFixed(2), margem.toFixed(2)];
+    const data = _gruposVendas.map(r => {
+      const qtde  = toNum(r.qtdevendida);
+      const custo = qtde * toNum(r.precocustoitem);
+      const venda = qtde * toNum(r.valorunit);
+      const margem = venda > 0 ? ((venda - custo) / venda * 100) : 0;
+      return [r.codprod, r.descproditemvenda, r.codvendedor, r.nomevendedor,
+              r.codcliente, r.nomecliente, r.cepcliente,
+              qtde, custo.toFixed(2), venda.toFixed(2), margem.toFixed(2)];
     });
     downloadCSV(`${_empresa?.nome ?? 'BI'}_Vendas_${periodo}.csv`, [header, ...data]);
   }
