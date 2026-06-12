@@ -867,6 +867,25 @@
             <div id="prodEmpty" style="display:none;text-align:center;padding:36px;color:#aaa;font-size:.88rem">Nenhum registro encontrado para o período.</div>
           </div>
         </div>
+
+        <div class="report-wrapper" id="prodCompsTotalWrapper" style="display:none;margin-top:18px">
+          <div class="report-header">
+            <h3>Totalização de Componentes</h3>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cód. Comp.</th>
+                  <th>Componente</th>
+                  <th>Und.</th>
+                  <th class="num">Qtde Total Geral</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyCompsTotal"></tbody>
+            </table>
+          </div>
+        </div>
       </div><!-- /secProducao -->
 
     </main>
@@ -2167,6 +2186,38 @@
     const fmtDate = d => d.split('.').reverse().join('/');
     document.getElementById('prodPeriodo').textContent = `${fmtDate(dtDe)} a ${fmtDate(dtAte)}`;
     document.getElementById('prodWrapper').style.display = '';
+
+    // Totalização geral de componentes
+    const compMap = new Map();
+    rows.forEach(row => {
+      (row.componentes || []).forEach(c => {
+        const key = c.codprodcomp;
+        if (!compMap.has(key)) {
+          compMap.set(key, { cod: c.codprodcomp, nome: c.nomeprodutocomp, und: c.undcomp, qtde: 0 });
+        }
+        compMap.get(key).qtde += toNum(c.qtdetotal);
+      });
+    });
+
+    const tbodyTotal = document.getElementById('tbodyCompsTotal');
+    tbodyTotal.innerHTML = '';
+    const totalWrapper = document.getElementById('prodCompsTotalWrapper');
+
+    if (compMap.size > 0) {
+      const sorted = [...compMap.values()].sort((a, b) => b.qtde - a.qtde);
+      sorted.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.cod}</td>
+          <td>${item.nome}</td>
+          <td>${item.und}</td>
+          <td class="num">${fmtNum(item.qtde)}</td>`;
+        tbodyTotal.appendChild(tr);
+      });
+      totalWrapper.style.display = '';
+    } else {
+      totalWrapper.style.display = 'none';
+    }
   }
 
   function toggleComps(i) {
