@@ -1375,6 +1375,9 @@
   function addRelRow(rel = null) {
     const div = document.createElement('div');
     div.className = 'rel-row';
+    const campoOpts = ['', 'unidade', ...Array.from({length: 10}, (_, i) => `campo${i+1}`)].map(v =>
+      `<option value="${v}">${v === '' ? 'Nenhum' : v}</option>`
+    ).join('');
     div.innerHTML = `
       <input type="text" placeholder="Nome do relatório" value="${rel?.nome ?? ''}" class="rel-nome" />
       <input type="text" placeholder="/endpoint" value="${rel?.endpoint ?? ''}" class="rel-endpoint" />
@@ -1383,8 +1386,16 @@
         <option value="compras">Compras</option>
         <option value="producao">Produção</option>
       </select>
+      <select class="rel-campo-exibicao" title="Campo de exibição (Produção)" style="border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:.82rem;outline:none;background:#fafbfc;color:var(--text);display:none">${campoOpts}</select>
       <button class="btn-icon btn-icon-danger" onclick="this.parentElement.remove();syncRelRowsEmpty()">×</button>`;
-    div.querySelector('.rel-tipo').value = rel?.tipo ?? 'vendas';
+    const selTipo   = div.querySelector('.rel-tipo');
+    const selCampo  = div.querySelector('.rel-campo-exibicao');
+    selTipo.value   = rel?.tipo ?? 'vendas';
+    selCampo.value  = rel?.campo_exibicao ?? 'campo1';
+    selCampo.style.display = selTipo.value === 'producao' ? '' : 'none';
+    selTipo.addEventListener('change', () => {
+      selCampo.style.display = selTipo.value === 'producao' ? '' : 'none';
+    });
     document.getElementById('relRows').appendChild(div);
     syncRelRowsEmpty();
   }
@@ -1404,9 +1415,10 @@
     if (!nome || !api_base || !login_endpoint) { errEl.textContent = 'Preencha todos os campos obrigatórios.'; return; }
 
     const relatorios = [...document.querySelectorAll('.rel-row')].map(row => ({
-      nome:     row.querySelector('.rel-nome').value.trim(),
-      endpoint: row.querySelector('.rel-endpoint').value.trim(),
-      tipo:     row.querySelector('.rel-tipo').value,
+      nome:            row.querySelector('.rel-nome').value.trim(),
+      endpoint:        row.querySelector('.rel-endpoint').value.trim(),
+      tipo:            row.querySelector('.rel-tipo').value,
+      campo_exibicao:  row.querySelector('.rel-campo-exibicao').value,
     })).filter(r => r.nome && r.endpoint);
 
     try {
@@ -2123,11 +2135,13 @@
     }
     document.getElementById('prodEmpty').style.display = 'none';
 
+    const campoLabel = _relatorioProducao?.campo_exibicao ?? '';
+    const showCampo  = campoLabel !== '';
     thead.innerHTML = `<tr>
       <th>Cód.</th>
       <th>Produto</th>
       <th class="num">Qtde Produzida</th>
-      <th>Unidade</th>
+      ${showCampo ? `<th>${campoLabel}</th>` : ''}
       <th style="text-align:center">Componentes</th>
     </tr>`;
 
@@ -2140,7 +2154,7 @@
         <td>${row.codproduto}</td>
         <td>${row.produto}</td>
         <td class="num">${fmtNum(row.qtdeproduzida)}</td>
-        <td>${row.unidade}</td>
+        ${showCampo ? `<td>${row[campoLabel] ?? '—'}</td>` : ''}
         <td style="text-align:center">
           ${hasComps
             ? `<button class="btn-icon" onclick="toggleComps(${i})">&#9654; ${row.componentes.length}</button>`
@@ -2152,7 +2166,7 @@
         const trComp = document.createElement('tr');
         trComp.id = `comps-${i}`;
         trComp.style.display = 'none';
-        trComp.innerHTML = `<td colspan="5" style="padding:0;background:#f0f4fb">
+        trComp.innerHTML = `<td colspan="${showCampo ? 5 : 4}" style="padding:0;background:#f0f4fb">
           <table style="width:100%;border-collapse:collapse;font-size:.75rem">
             <thead>
               <tr style="background:#dce4f5">
@@ -2187,15 +2201,20 @@
     document.getElementById('prodPeriodo').textContent = `${fmtDate(dtDe)} a ${fmtDate(dtAte)}`;
     document.getElementById('prodWrapper').style.display = '';
 
-    // Totalização geral de componentes
-    const compMap = new Map();
+    // Totalização geral de componentes agrupada por grupo
+    const grupoMap = new Map();
     rows.forEach(row => {
       (row.componentes || []).forEach(c => {
-        const key = c.codprodcomp;
-        if (!compMap.has(key)) {
-          compMap.set(key, { cod: c.codprodcomp, nome: c.nomeprodutocomp, und: c.undcomp, qtde: 0 });
+        const grpKey  = c.codgrupocomp ?? 0;
+        const compKey = c.codprodcomp;
+        if (!grupoMap.has(grpKey)) {
+          grupoMap.set(grpKey, { nome: c.nomegrupocomp ?? 'Sem Grupo', comps: new Map() });
         }
-        compMap.get(key).qtde += toNum(c.qtdetotal);
+        const comps = grupoMap.get(grpKey).comps;
+        if (!comps.has(compKey)) {
+          comps.set(compKey, { cod: c.codprodcomp, nome: c.nomeprodutocomp, und: c.undcomp, qtde: 0 });
+        }
+        comps.get(compKey).qtde += toNum(c.qtdetotal);
       });
     });
 
@@ -2203,16 +2222,22 @@
     tbodyTotal.innerHTML = '';
     const totalWrapper = document.getElementById('prodCompsTotalWrapper');
 
-    if (compMap.size > 0) {
-      const sorted = [...compMap.values()].sort((a, b) => b.qtde - a.qtde);
-      sorted.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.cod}</td>
-          <td>${item.nome}</td>
-          <td>${item.und}</td>
-          <td class="num">${fmtNum(item.qtde)}</td>`;
-        tbodyTotal.appendChild(tr);
+    if (grupoMap.size > 0) {
+      grupoMap.forEach(grp => {
+        const trGrp = document.createElement('tr');
+        trGrp.innerHTML = `<td colspan="4" style="background:#dce4f5;font-weight:600;color:#2d4a8a;padding:7px 12px">${grp.nome}</td>`;
+        tbodyTotal.appendChild(trGrp);
+
+        const sorted = [...grp.comps.values()].sort((a, b) => b.qtde - a.qtde);
+        sorted.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.cod}</td>
+            <td>${item.nome}</td>
+            <td>${item.und}</td>
+            <td class="num">${fmtNum(item.qtde)}</td>`;
+          tbodyTotal.appendChild(tr);
+        });
       });
       totalWrapper.style.display = '';
     } else {

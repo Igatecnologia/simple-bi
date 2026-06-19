@@ -43,6 +43,11 @@ try {
   db.exec("ALTER TABLE relatorios ADD COLUMN tipo TEXT NOT NULL DEFAULT 'vendas'");
 } catch (_) { /* coluna já existe */ }
 
+// migração: adiciona coluna campo_exibicao em relatorios
+try {
+  db.exec("ALTER TABLE relatorios ADD COLUMN campo_exibicao TEXT NOT NULL DEFAULT 'campo1'");
+} catch (_) { /* coluna já existe */ }
+
 // credenciais padrão: admin / admin  →  sha256("admin")
 const adminExists = db.prepare('SELECT COUNT(*) AS n FROM admin_config').get();
 if (adminExists.n === 0) {

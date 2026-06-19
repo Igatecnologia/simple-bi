@@ -49,9 +49,9 @@ app.post('/api/empresas', (req, res) => {
   ).run(nome.trim(), api_base.trim(), login_endpoint.trim());
 
   const relStmt = db.prepare(
-    'INSERT INTO relatorios (empresa_id, nome, endpoint, tipo) VALUES (?, ?, ?, ?)'
+    'INSERT INTO relatorios (empresa_id, nome, endpoint, tipo, campo_exibicao) VALUES (?, ?, ?, ?, ?)'
   );
-  relatorios.forEach(rel => relStmt.run(r.lastInsertRowid, rel.nome.trim(), rel.endpoint.trim(), rel.tipo || 'vendas'));
+  relatorios.forEach(rel => relStmt.run(r.lastInsertRowid, rel.nome.trim(), rel.endpoint.trim(), rel.tipo || 'vendas', rel.campo_exibicao ?? 'campo1'));
 
   const empresa = db.prepare('SELECT * FROM empresas WHERE id = ?').get(r.lastInsertRowid);
   empresa.relatorios = db.prepare('SELECT * FROM relatorios WHERE empresa_id = ?').all(r.lastInsertRowid);
@@ -71,9 +71,9 @@ app.put('/api/empresas/:id', (req, res) => {
   // sincroniza relatórios: remove e re-insere
   db.prepare('DELETE FROM relatorios WHERE empresa_id = ?').run(id);
   const relStmt = db.prepare(
-    'INSERT INTO relatorios (empresa_id, nome, endpoint, tipo) VALUES (?, ?, ?, ?)'
+    'INSERT INTO relatorios (empresa_id, nome, endpoint, tipo, campo_exibicao) VALUES (?, ?, ?, ?, ?)'
   );
-  relatorios.forEach(rel => relStmt.run(id, rel.nome.trim(), rel.endpoint.trim(), rel.tipo || 'vendas'));
+  relatorios.forEach(rel => relStmt.run(id, rel.nome.trim(), rel.endpoint.trim(), rel.tipo || 'vendas', rel.campo_exibicao ?? 'campo1'));
 
   const empresa = db.prepare('SELECT * FROM empresas WHERE id = ?').get(id);
   empresa.relatorios = db.prepare('SELECT * FROM relatorios WHERE empresa_id = ?').all(id);
