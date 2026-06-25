@@ -501,6 +501,28 @@
           </button>
 
         </div>
+
+        <!-- Financeiro (raiz colapsável) -->
+        <button class="nav-group-hdr" id="hdrFinanceiro" onclick="toggleGroup('grpFinanceiro','hdrFinanceiro')">
+          <span>Financeiro</span>
+          <svg class="chv" viewBox="0 0 24 24" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="grpFinanceiro">
+
+          <!-- Receber -->
+          <button class="nav-item" id="navReceber" onclick="navTo('receber')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><polyline points="12 14 12 18"/><polyline points="9 16 12 18 15 16"/></svg>
+            Receber
+          </button>
+
+          <!-- Pagar -->
+          <button class="nav-item" id="navPagar" onclick="navTo('pagar')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><polyline points="12 18 12 14"/><polyline points="9 16 12 14 15 16"/></svg>
+            Pagar
+          </button>
+
+        </div>
+
       </nav>
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -895,6 +917,26 @@
         </div>
       </div><!-- /secProducao -->
 
+      <!-- ── SEÇÃO: FINANCEIRO / RECEBER ────────────────────────────── -->
+      <div id="secReceber" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Financeiro — Contas a Receber</div>
+        </div>
+        <div style="margin:24px;padding:40px;background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.08);text-align:center;color:var(--muted);font-size:.9rem">
+          Em desenvolvimento
+        </div>
+      </div>
+
+      <!-- ── SEÇÃO: FINANCEIRO / PAGAR ──────────────────────────────── -->
+      <div id="secPagar" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Financeiro — Contas a Pagar</div>
+        </div>
+        <div style="margin:24px;padding:40px;background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.08);text-align:center;color:var(--muted);font-size:.9rem">
+          Em desenvolvimento
+        </div>
+      </div>
+
     </main>
   </div>
 </div><!-- /viewApp -->
@@ -1126,6 +1168,8 @@
       comprasdet:  'secComprasDet',
       producaodash:'secProducaoDash',
       producaodet: 'secProducao',
+      receber:     'secReceber',
+      pagar:       'secPagar',
     };
     Object.entries(map).forEach(([s, id]) => {
       document.getElementById(id).style.display = s === section ? '' : 'none';
@@ -1136,6 +1180,8 @@
     document.getElementById('navComprasDet').classList.toggle('active', section === 'comprasdet');
     document.getElementById('navProdDash').classList.toggle('active',   section === 'producaodash');
     document.getElementById('navProdDet').classList.toggle('active',    section === 'producaodet');
+    document.getElementById('navReceber').classList.toggle('active',    section === 'receber');
+    document.getElementById('navPagar').classList.toggle('active',      section === 'pagar');
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('open');
   }
@@ -1691,7 +1737,7 @@
         <td class="num">${fmtNum(qtde)}</td>
         <td>${r.und ?? '—'}</td>
         <td class="num">${fmtNum(custo)}</td>
-        <td class="num">${fmtNum(toNum(r.qtdeconvertidavd))}</td>
+        <td class="num">${r.unconvertida ? fmtNum(toNum(r.qtdeconvertidavd)) : '—'}</td>
         <td>${r.unconvertida || '—'}</td>
         <td class="num">${fmtNum(venda - custo)}</td>
         <td class="num">${badgeMargem(margem)}</td>`;
