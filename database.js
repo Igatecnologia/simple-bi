@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const db = new Database(path.join(__dirname, 'bi.db'));
+const db = new Database(process.env.DB_PATH || path.join(__dirname, 'bi.db'));
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
@@ -33,9 +33,19 @@ db.exec(`
   );
 `);
 
-// migração: adiciona coluna usuario se não existir (banco já criado sem ela)
+// migração: adiciona coluna usuario se não existir
 try {
   db.exec("ALTER TABLE admin_config ADD COLUMN usuario TEXT NOT NULL DEFAULT 'admin'");
+} catch (_) { /* coluna já existe */ }
+
+// migração: adiciona coluna tipo em relatorios
+try {
+  db.exec("ALTER TABLE relatorios ADD COLUMN tipo TEXT NOT NULL DEFAULT 'vendas'");
+} catch (_) { /* coluna já existe */ }
+
+// migração: adiciona coluna campo_exibicao em relatorios
+try {
+  db.exec("ALTER TABLE relatorios ADD COLUMN campo_exibicao TEXT NOT NULL DEFAULT 'campo1'");
 } catch (_) { /* coluna já existe */ }
 
 // credenciais padrão: admin / admin  →  sha256("admin")
@@ -52,11 +62,33 @@ const empCount = db.prepare('SELECT COUNT(*) AS n FROM empresas').get();
 if (empCount.n === 0) {
   const r = db.prepare(
     'INSERT INTO empresas (nome, api_base, login_endpoint) VALUES (?, ?, ?)'
-  ).run('SGB', 'http://localhost:3007/sgbrbi', '/usuario/login');
+  ).run('SGB', 'http://dbcayemecolchoes.centraldoaplicativo.com.br/sgbrbi', '/usuario/login');
 
   db.prepare(
     'INSERT INTO relatorios (empresa_id, nome, endpoint) VALUES (?, ?, ?)'
   ).run(r.lastInsertRowid, 'Vendas Sintético', '/vendas/analitico');
+
+  db.prepare('INSERT INTO relatorios (empresa_id, nome, endpoint, tipo) VALUES (?, ?, ?, ?)'
+  ).run(r.lastInsertRowid, 'Produção', '/produzido', 'producao');
+
+  db.prepare('INSERT INTO relatorios (empresa_id, nome, endpoint, tipo) VALUES (?, ?, ?, ?)'
+  ).run(r.lastInsertRowid, 'Compras', '/compras', 'compras');
 }
+
+// migração: seed relatório "Venda Detalhada" para cada empresa que ainda não o tenha
+try {
+  const empresas = db.prepare('SELECT id FROM empresas WHERE ativo = 1').all();
+  const insStmt  = db.prepare(
+    'INSERT INTO relatorios (empresa_id, nome, endpoint, tipo) VALUES (?, ?, ?, ?)'
+  );
+  empresas.forEach(e => {
+    const existe = db.prepare(
+      "SELECT COUNT(*) AS n FROM relatorios WHERE empresa_id = ? AND tipo = 'vendadet'"
+    ).get(e.id);
+    if (existe.n === 0) {
+      insStmt.run(e.id, 'Venda Detalhada', '/venda/detalhada', 'vendadet');
+    }
+  });
+} catch (_) {}
 
 module.exports = db;

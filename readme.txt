@@ -266,7 +266,64 @@ Causa: nomevendedor (ou decprod) chegou null da API; chamar null.localeCompare()
 Correção no sort: str = v => v ?? '' converte null/undefined para string vazia antes do localeCompare.
 Correção nos dados: todos os campos de texto agora usam ?? '—' ao montar o grupo, então nunca ficam null na estrutura interna.
 
+O erro 404 com o logo do EasyPanel indica que a requisição chega ao Traefik (reverse proxy interno do EasyPanel), mas ele não sabe para qual serviço rotear porque o domínio não está configurado na aplicação.
 
+O que fazer no EasyPanel
+1. Configurar o domínio na aplicação:
+
+Acesse o EasyPanel → seu projeto → sua aplicação
+Vá em Domains (ou "Domínios")
+Clique em Add Domain
+Adicione: cayemecolchoes.centraldoaplicativo.com.br
+Salve e faça Deploy/Redeploy
+2. Se você tem um reverse proxy externo na VPS (Nginx/Caddy) na frente do EasyPanel:
+
+O proxy externo precisa passar o Host header correto pro Traefik do EasyPanel. Exemplo para Nginx:
+
+
+server {
+    listen 80;
+    server_name cayemecolchoes.centraldoaplicativo.com.br;
+
+    location / {
+        proxy_pass http://localhost:3000;  # porta do Traefik/EasyPanel
+        proxy_set_header Host $host;       # <-- essencial
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+O proxy_set_header Host $host; é crítico — sem ele o Traefik recebe localhost como host e não encontra a rota.
+
+3. Cloudflare:
+
+Certifique-se que o registro DNS aponta para o IP da VPS (tipo A)
+Se estiver com proxy do Cloudflare ativo (laranja), configure SSL/TLS como Full no Cloudflare (não "Full Strict" a menos que tenha cert válido no EasyPanel)
+Fluxo correto
+
+Cloudflare → VPS:443/80 → Nginx/proxy externo → EasyPanel Traefik → App
+                              (passa Host header)    (roteia pelo domínio configurado)
+O ponto crítico é que o domínio cadastrado no EasyPanel precisa bater exatamente com o Host header que o Traefik recebe.
+
+A configuração parece correta conceitualmente, mas a Porta é a porta interna do container — a porta em que sua aplicação está escutando dentro do Docker, não a porta externa.
+
+Deixa eu verificar qual porta sua aplicação usa.
+
+Globpattern: "**/Dockerfile*"
+Found 1 file
+Globpattern: "**/docker-compose*"
+Found 1 file
+Read c:\projetos\dev\simple-bi\Dockerfile
+Read c:\projetos\dev\simple-bi\docker-compose.yml
+A porta correta é 3001, não 80. Sua aplicação expõe a porta 3001 no container.
+
+Corrija assim no EasyPanel:
+Campo	Valor atual	Valor correto
+Protocolo	HTTP	HTTP
+Porta	80	3001
+O campo Porta no EasyPanel significa: "em qual porta o container está escutando internamente". Como seu Dockerfile tem EXPOSE 3001 e o docker-compose.yml mapeia 3001:3001, a porta é 3001.
+
+O Traefik do EasyPanel vai receber as requisições HTTPS externas e repassar para http://container
 
 
 Description
@@ -321,3 +378,6 @@ USD 0.00
 Simple Storage Service
 USD 0.00
 Total taxUSD 9.
+
+prompt de exemplo, não utilize.
+consuma https://dbcayemecolchoes.centraldoaplicativo.com.br/sgbrbi/venda/detalhada?dt_de=2026.05.18&dt_ate=2026.05.22 verifique quais relatórios de analise de dados podemos extrair

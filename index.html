@@ -212,6 +212,16 @@
     #relStatus.error { color: var(--red); font-weight: 600; }
     #relStatus.ok    { color: var(--green); font-weight: 600; }
 
+    /* ══ COMPRAS SECTION ════════════════════════════════════════════════════ */
+    #comprasStatus { margin: 0 24px 10px; font-size: .82rem; min-height: 20px; color: #555; }
+    #comprasStatus.error { color: var(--red); font-weight: 600; }
+    #comprasStatus.ok    { color: var(--green); font-weight: 600; }
+
+    /* ══ PRODUÇÃO SECTION ═══════════════════════════════════════════════════ */
+    #prodStatus { margin: 0 24px 10px; font-size: .82rem; min-height: 20px; color: #555; }
+    #prodStatus.error { color: var(--red); font-weight: 600; }
+    #prodStatus.ok    { color: var(--green); font-weight: 600; }
+
     .summary { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 24px 18px; }
     .card {
       flex: 1 1 150px; background: #fff; border-radius: 10px;
@@ -336,6 +346,19 @@
       tbody tr { page-break-inside: avoid; }
     }
 
+    /* ══ NAV HIERÁRQUICO ════════════════════════════════════════════════════ */
+    .nav-group-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; border: none; background: none;
+      padding: 10px 12px 4px;
+      font-size: .62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: rgba(255,255,255,.35); cursor: pointer; text-align: left;
+    }
+    .nav-group-hdr:hover { color: rgba(255,255,255,.55); }
+    .nav-group-hdr .chv { width: 11px; height: 11px; stroke: currentColor; fill: none; flex-shrink: 0; transition: transform .2s; }
+    .nav-group-hdr.collapsed .chv { transform: rotate(-90deg); }
+    .nav-child { padding-left: 30px !important; font-size: .8rem; }
+
     /* ══ RESPONSIVE ═════════════════════════════════════════════════════════ */
     @media (max-width: 768px) {
       .sidebar { position: fixed; left: 0; top: var(--header-h); bottom: 0; z-index: 50; transform: translateX(-100%); }
@@ -439,23 +462,121 @@
       </div>
 
       <nav class="sidebar-nav">
-        <div class="sidebar-section">Menu</div>
 
-        <button class="nav-item active" id="navDash" onclick="navTo('dashboard')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          Dashboard
+        <!-- Dashboard (raiz colapsável) -->
+        <button class="nav-group-hdr" id="hdrDashboard" onclick="toggleGroup('grpDashboard','hdrDashboard')">
+          <span>Dashboard</span>
+          <svg class="chv" viewBox="0 0 24 24" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+        <div id="grpDashboard">
 
-        <button class="nav-item" id="navRel" onclick="navTo('relatorios')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-          Relatórios
+          <!-- Vendas -->
+          <button class="nav-item active" id="navDash" onclick="navTo('dashboard')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Vendas
+          </button>
+          <button class="nav-item nav-child" id="navRel" onclick="navTo('relatorios')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            Detalhes
+          </button>
+          <button class="nav-item nav-child" id="navVendaDet" onclick="navTo('vendadet')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/><polyline points="12 17 14 19 18 15"/></svg>
+            Detalhada
+          </button>
+
+          <!-- Compras -->
+          <button class="nav-item" id="navComprasDash" onclick="navTo('comprasdash')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Compras
+          </button>
+          <button class="nav-item nav-child" id="navComprasDet" onclick="navTo('comprasdet')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            Detalhes
+          </button>
+
+          <!-- Produção -->
+          <button class="nav-item" id="navProdDash" onclick="navTo('producaodash')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="6" height="18" rx="1"/><rect x="9" y="8" width="6" height="13" rx="1"/><rect x="16" y="13" width="6" height="8" rx="1"/></svg>
+            Produção
+          </button>
+          <button class="nav-item nav-child" id="navProdDet" onclick="navTo('producaodet')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            Detalhes
+          </button>
+
+        </div>
+
+        <!-- Financeiro (raiz colapsável) -->
+        <button class="nav-group-hdr" id="hdrFinanceiro" onclick="toggleGroup('grpFinanceiro','hdrFinanceiro')">
+          <span>Financeiro</span>
+          <svg class="chv" viewBox="0 0 24 24" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+        <div id="grpFinanceiro">
+
+          <!-- Receber -->
+          <button class="nav-item" id="navReceber" onclick="navTo('receber')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><polyline points="12 14 12 18"/><polyline points="9 16 12 18 15 16"/></svg>
+            Receber
+          </button>
+
+          <!-- Pagar -->
+          <button class="nav-item" id="navPagar" onclick="navTo('pagar')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><polyline points="12 18 12 14"/><polyline points="9 16 12 14 15 16"/></svg>
+            Pagar
+          </button>
+
+        </div>
+
       </nav>
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="main-content">
+
+      <!-- ── SEÇÃO: DASHBOARD PRODUCAO ──────────────────────────────── -->
+      <div id="secProducaoDash" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Periodo do Dashboard de Producao</div>
+          <div class="field" id="fieldRelProducaoDash" style="display:none">
+            <label>Relatorio</label>
+            <select id="selRelProducaoDash"></select>
+          </div>
+          <div class="field">
+            <label>Data inicial</label>
+            <input type="date" id="prodd_de" />
+          </div>
+          <div class="field">
+            <label>Data final</label>
+            <input type="date" id="prodd_ate" />
+          </div>
+          <button class="btn btn-primary" id="btnProdDash" onclick="gerarDashboardProducao()">
+            Gerar Dashboard
+          </button>
+        </div>
+        <div id="dashProdStatus" class="dash-status"></div>
+
+        <div id="dashProdKpis" class="dash-kpis" style="display:none">
+          <div class="kpi-card sky"><label>Produtos</label><div class="kpi-val" id="kpiProdItens">0</div></div>
+          <div class="kpi-card green"><label>Total Produzido</label><div class="kpi-val" id="kpiProdQtde">0,00</div></div>
+          <div class="kpi-card"><label>Com Componentes</label><div class="kpi-val" id="kpiProdComps">0</div></div>
+        </div>
+
+        <div id="dashProdGrid" class="dash-grid" style="display:none">
+          <div class="chart-card chart-card-full">
+            <div class="chart-title">Top 10 Produtos por Qtde Produzida</div>
+            <div class="chart-wrap-tall"><canvas id="chartProdTop"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Distribuicao por Unidade</div>
+            <div class="chart-wrap"><canvas id="chartProdUnidade"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Com vs. Sem Componentes</div>
+            <div class="chart-wrap"><canvas id="chartProdComps"></canvas></div>
+          </div>
+        </div>
+      </div>
 
       <!-- ── SEÇÃO: DASHBOARD ──────────────────────────────────────── -->
       <div id="secDashboard">
@@ -553,6 +674,10 @@
             <h3 id="reportTitulo">Relatório de Vendas Sintético</h3>
             <div class="report-header-right">
               <small id="reportPeriodo"></small>
+              <button class="btn-pdf" onclick="exportarCSVVendas()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                Exportar CSV
+              </button>
               <button class="btn-pdf" onclick="gerarPDF()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
                 Exportar PDF
@@ -566,26 +691,326 @@
                 <tr>
                   <th>Cód. Prod.</th><th>Descrição</th>
                   <th>Cód. Vend.</th><th>Vendedor</th>
-                  <th>Cód. Cli.</th><th>Cliente</th><th>CEP</th>
-                  <th class="num">Qtde.</th>
-                  <th class="num">Custo (R$)</th>
+                  <th>Cód. Cli.</th><th>Cliente</th><th>Nº DAV</th>
                   <th class="num">Venda (R$)</th>
-                  <th class="num">Margem</th>
+                  <th class="num">Qtde.</th>
+                  <th>Und.</th>
+                  <th class="num">Custo (R$)</th>
+                  <th class="num">Qtde. Conv.</th>
+                  <th>Und. Conv.</th>
+                  <th class="num">Margem Contrib. (R$)</th>
+                  <th class="num">Margem (%)</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
               <tfoot>
                 <tr id="tfootRow">
                   <td colspan="7"><strong>TOTAL GERAL</strong></td>
-                  <td class="num" id="ftQtde"></td>
-                  <td class="num" id="ftCusto"></td>
                   <td class="num" id="ftVenda"></td>
+                  <td class="num" id="ftQtde"></td>
+                  <td></td>
+                  <td class="num" id="ftCusto"></td>
+                  <td></td><td></td>
+                  <td class="num" id="ftMargContrib"></td>
                   <td class="num" id="ftMargem"></td>
                 </tr>
               </tfoot>
             </table>
             <div id="tblEmpty" style="display:none">Nenhum registro encontrado para o período.</div>
           </div>
+        </div>
+      </div>
+
+      <!-- ── SEÇÃO: DASHBOARD COMPRAS ─────────────────────────────── -->
+      <div id="secComprasDash" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Período do Dashboard de Compras</div>
+          <div class="field" id="fieldRelComprasDash" style="display:none">
+            <label>Relatório</label>
+            <select id="selRelComprasDash"></select>
+          </div>
+          <div class="field">
+            <label>Data inicial</label>
+            <input type="date" id="comprasd_de" />
+          </div>
+          <div class="field">
+            <label>Data final</label>
+            <input type="date" id="comprasd_ate" />
+          </div>
+          <button class="btn btn-primary" id="btnComprasDash" onclick="gerarDashboardCompras()">
+            Gerar Dashboard
+          </button>
+        </div>
+        <div id="dashComprasStatus" class="dash-status"></div>
+
+        <div id="dashComprasKpis" class="dash-kpis" style="display:none">
+          <div class="kpi-card sky"><label>NFs</label><div class="kpi-val" id="kpiComprasNFs">0</div></div>
+          <div class="kpi-card"><label>Fornecedores</label><div class="kpi-val" id="kpiComprasForn">0</div></div>
+          <div class="kpi-card red"><label>Total Comprado (R$)</label><div class="kpi-val" id="kpiComprasTotal">0,00</div></div>
+          <div class="kpi-card green"><label>Ticket Médio NF (R$)</label><div class="kpi-val" id="kpiComprasTicket">0,00</div></div>
+        </div>
+
+        <div id="dashComprasGrid" class="dash-grid" style="display:none">
+          <div class="chart-card">
+            <div class="chart-title">Top 10 Fornecedores por Valor (R$)</div>
+            <div class="chart-wrap-tall"><canvas id="chartComprasForn"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Participação por UF</div>
+            <div class="chart-wrap-tall"><canvas id="chartComprasUF"></canvas></div>
+          </div>
+          <div class="chart-card chart-card-full">
+            <div class="chart-title">Top 10 Produtos por Valor Comprado (R$)</div>
+            <div class="chart-wrap"><canvas id="chartComprasProd"></canvas></div>
+          </div>
+        </div>
+      </div><!-- /secComprasDash -->
+
+      <!-- ── SEÇÃO: DETALHES COMPRAS ────────────────────────────── -->
+      <div id="secComprasDet" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Período das Compras</div>
+          <div class="field" id="fieldRelComprasDet" style="display:none">
+            <label>Relatório</label>
+            <select id="selRelComprasDet"></select>
+          </div>
+          <div class="field">
+            <label>Data inicial</label>
+            <input type="date" id="compras_de" />
+          </div>
+          <div class="field">
+            <label>Data final</label>
+            <input type="date" id="compras_ate" />
+          </div>
+          <button class="btn btn-primary" id="btnCompras" onclick="gerarCompras()">
+            Gerar Relatório
+          </button>
+        </div>
+
+        <div id="comprasStatus"></div>
+
+        <div class="summary" id="comprasSummary" style="display:none">
+          <div class="card blue"><label>Total de Grupos</label><div class="val" id="comprasCardItens">0</div></div>
+          <div class="card red"><label>Total Comprado (R$)</label><div class="val" id="comprasCardTotal">0,00</div></div>
+        </div>
+
+        <div class="report-wrapper" id="comprasWrapper" style="display:none">
+          <div id="printHeaderCompras" style="display:none">
+            <div class="ph-left">
+              <h2>Simple BI — <span id="phEmpresaCompras"></span></h2>
+              <p id="phPeriodoCompras"></p>
+            </div>
+            <div class="ph-right">
+              <div>Relatório: <strong>Compras</strong></div>
+              <div>Usuário: <strong id="phUsuarioCompras"></strong></div>
+              <div>Emitido: <strong id="phDataHoraCompras"></strong></div>
+            </div>
+          </div>
+
+          <div class="report-header">
+            <h3>Compras</h3>
+            <div class="report-header-right">
+              <small id="comprasPeriodo"></small>
+              <button class="btn-pdf" onclick="exportarCSVCompras()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                Exportar CSV
+              </button>
+              <button class="btn-pdf" onclick="gerarPDFCompras()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+                Exportar PDF
+              </button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cód. Prod.</th><th>Produto</th>
+                  <th>Cód. Forn.</th><th>Fornecedor</th>
+                  <th>Cidade</th><th>UF</th>
+                  <th class="num">Qtde.</th>
+                  <th class="num">Valor Unit. (R$)</th>
+                  <th class="num">Total (R$)</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyCompras"></tbody>
+              <tfoot>
+                <tr id="tfootCompras">
+                  <td colspan="6"><strong>TOTAL GERAL</strong></td>
+                  <td class="num" id="ftComprasQtde"></td>
+                  <td class="num">—</td>
+                  <td class="num" id="ftComprasTotal"></td>
+                </tr>
+              </tfoot>
+            </table>
+            <div id="tblComprasEmpty" style="display:none;text-align:center;padding:36px;color:#aaa;font-size:.88rem">Nenhum registro encontrado para o período.</div>
+          </div>
+        </div>
+      </div><!-- /secComprasDet -->
+
+      <!-- ── SEÇÃO: PRODUÇÃO ──────────────────────────────────────── -->
+      <div id="secProducao" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Período da Produção</div>
+          <div class="field" id="fieldRelProducaoDet" style="display:none">
+            <label>Relatório</label>
+            <select id="selRelProducaoDet"></select>
+          </div>
+          <div class="field">
+            <label>Data inicial</label>
+            <input type="date" id="prod_de" />
+          </div>
+          <div class="field">
+            <label>Data final</label>
+            <input type="date" id="prod_ate" />
+          </div>
+          <button class="btn btn-primary" id="btnProd" onclick="gerarProducao()">
+            Gerar Relatório
+          </button>
+        </div>
+
+        <div id="prodStatus"></div>
+
+        <div class="summary" id="prodSummary" style="display:none">
+          <div class="card blue"><label>Total de Produtos</label><div class="val" id="prodCardItens">0</div></div>
+          <div class="card"><label>Total Produzido</label><div class="val" id="prodCardQtde">0,00</div></div>
+        </div>
+
+        <div class="report-wrapper" id="prodWrapper" style="display:none">
+          <div class="report-header">
+            <h3>Produção</h3>
+            <div class="report-header-right">
+              <small id="prodPeriodo"></small>
+              <button class="btn-pdf" onclick="exportarCSVProducao()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                Exportar CSV
+              </button>
+              <button class="btn-pdf" onclick="gerarPDFProducao()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+                Exportar PDF
+              </button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead id="theadProd"></thead>
+              <tbody id="tbodyProd"></tbody>
+            </table>
+            <div id="prodEmpty" style="display:none;text-align:center;padding:36px;color:#aaa;font-size:.88rem">Nenhum registro encontrado para o período.</div>
+          </div>
+        </div>
+
+        <div class="report-wrapper" id="prodCompsTotalWrapper" style="display:none;margin-top:18px">
+          <div class="report-header">
+            <h3>Totalização de Componentes</h3>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cód. Comp.</th>
+                  <th>Componente</th>
+                  <th>Und.</th>
+                  <th class="num">Qtde Total Geral</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyCompsTotal"></tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- /secProducao -->
+
+      <!-- ── SEÇÃO: VENDA DETALHADA ────────────────────────────────── -->
+      <div id="secVendaDet" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Período — Venda Detalhada</div>
+          <div class="field" id="fieldRelVendaDet" style="display:none">
+            <label>Relatório</label>
+            <select id="selRelVendaDet"></select>
+          </div>
+          <div class="field">
+            <label>Data inicial</label>
+            <input type="date" id="vdet_de" />
+          </div>
+          <div class="field">
+            <label>Data final</label>
+            <input type="date" id="vdet_ate" />
+          </div>
+          <button class="btn btn-primary" id="btnVendaDet" onclick="gerarVendaDet()">
+            Gerar Relatório
+          </button>
+        </div>
+
+        <div id="vendaDetStatus" style="margin:0 24px 10px;font-size:.82rem;min-height:20px;color:#555"></div>
+
+        <div class="summary" id="vendaDetSummary" style="display:none">
+          <div class="card blue"><label>Total de Itens</label><div class="val" id="vdetCardItens">0</div></div>
+          <div class="card green"><label>Total Venda (R$)</label><div class="val" id="vdetCardVenda">0,00</div></div>
+          <div class="card red"><label>Total Custo (R$)</label><div class="val" id="vdetCardCusto">0,00</div></div>
+          <div class="card"><label>Margem Bruta (R$)</label><div class="val" id="vdetCardMargem">0,00</div></div>
+          <div class="card"><label>Margem (%)</label><div class="val" id="vdetCardMargemPct">0%</div></div>
+        </div>
+
+        <div class="report-wrapper" id="vendaDetWrapper" style="display:none">
+          <div class="report-header">
+            <h3>Venda Detalhada</h3>
+            <div class="report-header-right">
+              <small id="vendaDetPeriodo"></small>
+              <button class="btn-pdf" onclick="exportarCSVVendaDet()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                Exportar CSV
+              </button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nº DAV</th>
+                  <th>Data Fec.</th>
+                  <th>Vendedor</th>
+                  <th>Cliente</th>
+                  <th>CEP</th>
+                  <th class="num">Total (R$)</th>
+                  <th>Status</th>
+                  <th style="text-align:center">Itens</th>
+                  <th style="text-align:center">Receber</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyVendaDet"></tbody>
+              <tfoot>
+                <tr id="tfootVendaDet">
+                  <td colspan="5"><strong>TOTAL GERAL</strong></td>
+                  <td class="num" id="ftVdetTotal"></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+            <div id="tblVdetEmpty" style="display:none;text-align:center;padding:36px;color:#aaa;font-size:.88rem">Nenhum registro encontrado para o período.</div>
+          </div>
+        </div>
+      </div><!-- /secVendaDet -->
+
+      <!-- ── SEÇÃO: FINANCEIRO / RECEBER ────────────────────────────── -->
+      <div id="secReceber" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Financeiro — Contas a Receber</div>
+        </div>
+        <div style="margin:24px;padding:40px;background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.08);text-align:center;color:var(--muted);font-size:.9rem">
+          Em desenvolvimento
+        </div>
+      </div>
+
+      <!-- ── SEÇÃO: FINANCEIRO / PAGAR ──────────────────────────────── -->
+      <div id="secPagar" style="display:none">
+        <div class="panel">
+          <div class="panel-title">Financeiro — Contas a Pagar</div>
+        </div>
+        <div style="margin:24px;padding:40px;background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.08);text-align:center;color:var(--muted);font-size:.9rem">
+          Em desenvolvimento
         </div>
       </div>
 
@@ -762,7 +1187,9 @@
 ════════════════════════════════════════ -->
 <script>
   // ── ESTADO ────────────────────────────────────────────────────────────────
-  let _token = null, _nomeUsuario = '', _empresa = null, _relatorio = null, _adminAuthed = false;
+  let _token = null, _nomeUsuario = '', _empresa = null, _adminAuthed = false;
+  let _relatorio = null, _relatorioProducao = null, _relatorioCompras = null, _relatorioVendaDet = null;
+  let _gruposVendas = [], _rowsProducao = [], _gruposCompras = [];
   let _charts = { clientes: null, vendedor: null, produtos: null };
 
   const PALETTE = ['#0f3460','#e94560','#27ae60','#2980b9','#f39c12','#8e44ad','#16a085','#d35400','#c0392b','#7f8c8d'];
@@ -802,12 +1229,38 @@
   }
 
   // ── NAVEGAÇÃO DE SEÇÕES ───────────────────────────────────────────────────
+  function toggleGroup(groupId, hdrId) {
+    const grp = document.getElementById(groupId);
+    const hdr = document.getElementById(hdrId);
+    const hide = grp.style.display !== 'none';
+    grp.style.display = hide ? 'none' : '';
+    hdr.classList.toggle('collapsed', hide);
+  }
+
   function navTo(section) {
-    document.getElementById('secDashboard').style.display  = section === 'dashboard'  ? '' : 'none';
-    document.getElementById('secRelatorios').style.display = section === 'relatorios' ? '' : 'none';
-    document.getElementById('navDash').classList.toggle('active', section === 'dashboard');
-    document.getElementById('navRel').classList.toggle('active',  section === 'relatorios');
-    // fecha sidebar no mobile
+    const map = {
+      dashboard:   'secDashboard',
+      relatorios:  'secRelatorios',
+      comprasdash: 'secComprasDash',
+      comprasdet:  'secComprasDet',
+      producaodash:'secProducaoDash',
+      producaodet: 'secProducao',
+      receber:     'secReceber',
+      pagar:       'secPagar',
+      vendadet:    'secVendaDet',
+    };
+    Object.entries(map).forEach(([s, id]) => {
+      document.getElementById(id).style.display = s === section ? '' : 'none';
+    });
+    document.getElementById('navDash').classList.toggle('active',       section === 'dashboard');
+    document.getElementById('navRel').classList.toggle('active',        section === 'relatorios');
+    document.getElementById('navVendaDet').classList.toggle('active',   section === 'vendadet');
+    document.getElementById('navComprasDash').classList.toggle('active',section === 'comprasdash');
+    document.getElementById('navComprasDet').classList.toggle('active', section === 'comprasdet');
+    document.getElementById('navProdDash').classList.toggle('active',   section === 'producaodash');
+    document.getElementById('navProdDet').classList.toggle('active',    section === 'producaodet');
+    document.getElementById('navReceber').classList.toggle('active',    section === 'receber');
+    document.getElementById('navPagar').classList.toggle('active',      section === 'pagar');
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('open');
   }
@@ -864,22 +1317,44 @@
       document.getElementById('headerEmpresa').textContent = _empresa.nome;
       document.getElementById('sidebarCompany').textContent = _empresa.nome;
 
-      // popula selects de relatório
-      const rels = _empresa.relatorios || [];
-      ['selRelatorioDash', 'selRelatorio'].forEach(selId => {
+      // popula selects de relatório por tipo
+      const rels       = _empresa.relatorios || [];
+      const relsV       = rels.filter(r => (r.tipo || 'vendas') === 'vendas');
+      const relsCompras = rels.filter(r => r.tipo === 'compras');
+      const relsProd    = rels.filter(r => r.tipo === 'producao');
+      const relsVendaDet= rels.filter(r => r.tipo === 'vendadet');
+
+      const populaSel = (selIds, lista) => selIds.forEach(selId => {
         const s = document.getElementById(selId);
         s.innerHTML = '';
-        rels.forEach(r => {
+        lista.forEach(r => {
           const opt = document.createElement('option');
-          opt.value       = JSON.stringify(r);
-          opt.textContent = r.nome;
+          opt.value = JSON.stringify(r); opt.textContent = r.nome;
           s.appendChild(opt);
         });
       });
-      const showSel = rels.length > 1;
-      document.getElementById('fieldRelDash').style.display     = showSel ? '' : 'none';
-      document.getElementById('fieldRelatorio').style.display   = showSel ? '' : 'none';
-      _relatorio = rels[0] || null;
+
+      populaSel(['selRelatorioDash', 'selRelatorio'], relsV);
+      const showSelV = relsV.length > 1;
+      document.getElementById('fieldRelDash').style.display   = showSelV ? '' : 'none';
+      document.getElementById('fieldRelatorio').style.display = showSelV ? '' : 'none';
+      _relatorio = relsV[0] || null;
+
+      populaSel(['selRelComprasDash', 'selRelComprasDet'], relsCompras);
+      const showSelC = relsCompras.length > 1;
+      document.getElementById('fieldRelComprasDash').style.display = showSelC ? '' : 'none';
+      document.getElementById('fieldRelComprasDet').style.display  = showSelC ? '' : 'none';
+      _relatorioCompras = relsCompras[0] || null;
+
+      populaSel(['selRelProducaoDash', 'selRelProducaoDet'], relsProd);
+      const showSelP = relsProd.length > 1;
+      document.getElementById('fieldRelProducaoDash').style.display = showSelP ? '' : 'none';
+      document.getElementById('fieldRelProducaoDet').style.display  = showSelP ? '' : 'none';
+      _relatorioProducao = relsProd[0] || null;
+
+      populaSel(['selRelVendaDet'], relsVendaDet);
+      document.getElementById('fieldRelVendaDet').style.display = relsVendaDet.length > 1 ? '' : 'none';
+      _relatorioVendaDet = relsVendaDet[0] || null;
 
       showView('viewApp');
       navTo('dashboard');
@@ -892,15 +1367,32 @@
   }
 
   function sair() {
-    _token = null; _nomeUsuario = ''; _empresa = null; _relatorio = null;
+    _token = null; _nomeUsuario = ''; _empresa = null;
+    _relatorio = null; _relatorioCompras = null; _relatorioProducao = null; _relatorioVendaDet = null;
     document.getElementById('lSenha').value = '';
     document.getElementById('loginError').textContent = '';
     document.getElementById('summary').style.display = 'none';
     document.getElementById('reportWrapper').style.display = 'none';
     document.getElementById('dashKpis').style.display = 'none';
     document.getElementById('dashGrid').style.display = 'none';
+    document.getElementById('prodWrapper').style.display = 'none';
+    document.getElementById('prodSummary').style.display = 'none';
+    document.getElementById('dashProdKpis').style.display = 'none';
+    document.getElementById('dashProdGrid').style.display = 'none';
+    document.getElementById('comprasWrapper').style.display = 'none';
+    document.getElementById('comprasSummary').style.display = 'none';
+    document.getElementById('dashComprasKpis').style.display = 'none';
+    document.getElementById('dashComprasGrid').style.display = 'none';
+    document.getElementById('tbodyCompras').innerHTML = '';
+    destroyChartsCompras();
     document.getElementById('tbody').innerHTML = '';
+    document.getElementById('tbodyProd').innerHTML = '';
+    document.getElementById('theadProd').innerHTML = '';
+    document.getElementById('tbodyVendaDet').innerHTML = '';
+    document.getElementById('vendaDetSummary').style.display = 'none';
+    document.getElementById('vendaDetWrapper').style.display = 'none';
     destroyCharts();
+    destroyChartsProd();
     showView('viewLogin');
   }
 
@@ -1023,10 +1515,28 @@
   function addRelRow(rel = null) {
     const div = document.createElement('div');
     div.className = 'rel-row';
+    const campoOpts = ['', 'unidade', ...Array.from({length: 10}, (_, i) => `campo${i+1}`)].map(v =>
+      `<option value="${v}">${v === '' ? 'Nenhum' : v}</option>`
+    ).join('');
     div.innerHTML = `
       <input type="text" placeholder="Nome do relatório" value="${rel?.nome ?? ''}" class="rel-nome" />
       <input type="text" placeholder="/endpoint" value="${rel?.endpoint ?? ''}" class="rel-endpoint" />
+      <select class="rel-tipo" style="border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:.82rem;outline:none;background:#fafbfc;color:var(--text)">
+        <option value="vendas">Vendas</option>
+        <option value="vendadet">Venda Detalhada</option>
+        <option value="compras">Compras</option>
+        <option value="producao">Produção</option>
+      </select>
+      <select class="rel-campo-exibicao" title="Campo de exibição (Produção)" style="border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:.82rem;outline:none;background:#fafbfc;color:var(--text);display:none">${campoOpts}</select>
       <button class="btn-icon btn-icon-danger" onclick="this.parentElement.remove();syncRelRowsEmpty()">×</button>`;
+    const selTipo   = div.querySelector('.rel-tipo');
+    const selCampo  = div.querySelector('.rel-campo-exibicao');
+    selTipo.value   = rel?.tipo ?? 'vendas';
+    selCampo.value  = rel?.campo_exibicao ?? 'campo1';
+    selCampo.style.display = selTipo.value === 'producao' ? '' : 'none';
+    selTipo.addEventListener('change', () => {
+      selCampo.style.display = selTipo.value === 'producao' ? '' : 'none';
+    });
     document.getElementById('relRows').appendChild(div);
     syncRelRowsEmpty();
   }
@@ -1046,8 +1556,10 @@
     if (!nome || !api_base || !login_endpoint) { errEl.textContent = 'Preencha todos os campos obrigatórios.'; return; }
 
     const relatorios = [...document.querySelectorAll('.rel-row')].map(row => ({
-      nome: row.querySelector('.rel-nome').value.trim(),
-      endpoint: row.querySelector('.rel-endpoint').value.trim(),
+      nome:            row.querySelector('.rel-nome').value.trim(),
+      endpoint:        row.querySelector('.rel-endpoint').value.trim(),
+      tipo:            row.querySelector('.rel-tipo').value,
+      campo_exibicao:  row.querySelector('.rel-campo-exibicao').value,
     })).filter(r => r.nome && r.endpoint);
 
     try {
@@ -1272,10 +1784,9 @@
 
     try {
       setRelStatus('Buscando dados…');
-      const rows   = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelatorio');
-      const grupos = agrupar(rows);
-      renderTabela(grupos, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
-      setRelStatus(`Relatório gerado — ${grupos.length} grupo(s).`, 'ok');
+      const rows = await fetchVendas(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelatorio');
+      renderTabela(rows, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      setRelStatus(`Relatório gerado — ${rows.length} registro(s).`, 'ok');
     } catch (err) {
       setRelStatus(err.message, 'error');
     } finally {
@@ -1284,11 +1795,12 @@
     }
   }
 
-  function renderTabela(grupos, dtDe, dtAte) {
+  function renderTabela(rows, dtDe, dtAte) {
+    _gruposVendas = rows;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
 
-    if (!grupos.length) {
+    if (!rows.length) {
       document.getElementById('tblEmpty').style.display = '';
       document.getElementById('tfootRow').style.display = 'none';
       return;
@@ -1297,47 +1809,921 @@
     document.getElementById('tfootRow').style.display = '';
 
     let totQtde = 0, totCusto = 0, totVenda = 0;
-    grupos.forEach(g => {
-      totQtde += g.qtde; totCusto += g.custo; totVenda += g.venda;
-      const margem = g.venda > 0 ? ((g.venda - g.custo) / g.venda) * 100 : 0;
+    rows.forEach(r => {
+      const qtde  = toNum(r.qtdevendida);
+      const custo = qtde * toNum(r.precocustoitem);
+      const venda = qtde * toNum(r.valorunit);
+      totQtde += qtde; totCusto += custo; totVenda += venda;
+      const margem = venda > 0 ? ((venda - custo) / venda) * 100 : 0;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${g.codprod}</td><td>${g.decprod}</td>
-        <td>${g.codvendedor}</td><td>${g.nomevendedor}</td>
-        <td>${g.codcliente}</td><td>${g.nomecliente}</td>
-        <td>${g.cepcliente}</td>
-        <td class="num">${fmtNum(g.qtde)}</td>
-        <td class="num">${fmtNum(g.custo)}</td>
-        <td class="num">${fmtNum(g.venda)}</td>
+        <td>${r.codprod ?? '—'}</td><td>${r.descproditemvenda ?? '—'}</td>
+        <td>${r.codvendedor ?? '—'}</td><td>${r.nomevendedor ?? '—'}</td>
+        <td>${r.codcliente ?? '—'}</td><td>${r.nomecliente ?? '—'}</td>
+        <td>${r.ndav ?? '—'}</td>
+        <td class="num">${fmtNum(venda)}</td>
+        <td class="num">${fmtNum(qtde)}</td>
+        <td>${r.und ?? '—'}</td>
+        <td class="num">${fmtNum(custo)}</td>
+        <td class="num">${r.unconvertida ? fmtNum(toNum(r.qtdeconvertidavd)) : '—'}</td>
+        <td>${r.unconvertida || '—'}</td>
+        <td class="num">${fmtNum(venda - custo)}</td>
         <td class="num">${badgeMargem(margem)}</td>`;
       tbody.appendChild(tr);
     });
 
     const totMargem = totVenda > 0 ? ((totVenda - totCusto) / totVenda) * 100 : 0;
-    document.getElementById('ftQtde').textContent  = fmtNum(totQtde);
-    document.getElementById('ftCusto').textContent = 'R$ ' + fmtNum(totCusto);
-    document.getElementById('ftVenda').textContent = 'R$ ' + fmtNum(totVenda);
-    document.getElementById('ftMargem').textContent = fmtPct(totMargem);
+    document.getElementById('ftVenda').textContent      = 'R$ ' + fmtNum(totVenda);
+    document.getElementById('ftQtde').textContent       = fmtNum(totQtde);
+    document.getElementById('ftCusto').textContent      = 'R$ ' + fmtNum(totCusto);
+    document.getElementById('ftMargContrib').textContent = 'R$ ' + fmtNum(totVenda - totCusto);
+    document.getElementById('ftMargem').textContent     = fmtPct(totMargem);
 
-    document.getElementById('cardItens').textContent = grupos.length;
-    document.getElementById('cardVenda').textContent  = 'R$ ' + fmtNum(totVenda);
-    document.getElementById('cardCusto').textContent  = 'R$ ' + fmtNum(totCusto);
-    document.getElementById('cardMargem').textContent = 'R$ ' + fmtNum(totVenda - totCusto);
+    document.getElementById('cardItens').textContent     = rows.length;
+    document.getElementById('cardVenda').textContent     = 'R$ ' + fmtNum(totVenda);
+    document.getElementById('cardCusto').textContent     = 'R$ ' + fmtNum(totCusto);
+    document.getElementById('cardMargem').textContent    = 'R$ ' + fmtNum(totVenda - totCusto);
     document.getElementById('cardMargemPct').textContent = fmtPct(totMargem);
 
     const fmtDate = d => d.split('.').reverse().join('/');
-    const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)} — ${grupos.length} grupos`;
+    const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)} — ${rows.length} registro(s)`;
     document.getElementById('reportPeriodo').textContent = periodo;
     document.getElementById('reportTitulo').textContent  = _relatorio?.nome ?? 'Relatório';
-    document.getElementById('phEmpresa').textContent   = _empresa?.nome ?? '';
-    document.getElementById('phRelatorio').textContent = _relatorio?.nome ?? '';
-    document.getElementById('phPeriodo').textContent   = periodo;
-    document.getElementById('phUsuario').textContent   = _nomeUsuario;
-    document.getElementById('phDataHora').textContent  =
+    document.getElementById('phEmpresa').textContent     = _empresa?.nome ?? '';
+    document.getElementById('phRelatorio').textContent   = _relatorio?.nome ?? '';
+    document.getElementById('phPeriodo').textContent     = periodo;
+    document.getElementById('phUsuario').textContent     = _nomeUsuario;
+    document.getElementById('phDataHora').textContent    =
       new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 
-    document.getElementById('summary').style.display = 'flex';
+    document.getElementById('summary').style.display      = 'flex';
     document.getElementById('reportWrapper').style.display = '';
+  }
+
+  // ── COMPRAS ───────────────────────────────────────────────────────────────
+  let _chartsCompras = { forn: null, uf: null, prod: null };
+
+  function destroyChartsCompras() {
+    Object.keys(_chartsCompras).forEach(k => {
+      if (_chartsCompras[k]) { _chartsCompras[k].destroy(); _chartsCompras[k] = null; }
+    });
+  }
+
+  function agruparCompras(rows) {
+    const map = new Map();
+    for (const r of rows) {
+      const key = `${r.codproduto}|${r.codfornecedor}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          codproduto: r.codproduto ?? '—', produto: r.produto ?? '—',
+          codfornecedor: r.codfornecedor ?? '—', fornecedor: r.fornecedor ?? '—',
+          cidade: r.cidade ?? '—', uf: r.uf ?? '—',
+          qtde: 0, valor: 0,
+        });
+      }
+      const g = map.get(key);
+      const q = toNum(r.qtde);
+      g.qtde  += q;
+      g.valor += q * toNum(r.valorunitariocompra);
+    }
+    return [...map.values()].sort((a, b) =>
+      String(a.fornecedor).localeCompare(String(b.fornecedor)) ||
+      String(a.produto).localeCompare(String(b.produto))
+    );
+  }
+
+  async function fetchCompras(dtDe, dtAte, relSelId) {
+    const selVal = document.getElementById(relSelId).value;
+    if (selVal) _relatorioCompras = JSON.parse(selVal);
+    if (!_relatorioCompras) throw new Error('Nenhum relatório de compras configurado.');
+    const url = `${_empresa.api_base}${_relatorioCompras.endpoint}?dt_de=${dtDe}&dt_ate=${dtAte}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${_token}` } });
+    if (!res.ok) throw new Error(`Erro ao buscar dados (HTTP ${res.status})`);
+    return res.json();
+  }
+
+  // — Dashboard compras —
+  function setDashComprasStatus(msg, type = '') {
+    const el = document.getElementById('dashComprasStatus');
+    el.textContent = msg; el.className = 'dash-status' + (type ? ' ' + type : '');
+  }
+
+  async function gerarDashboardCompras() {
+    const dtDeRaw  = document.getElementById('comprasd_de').value;
+    const dtAteRaw = document.getElementById('comprasd_ate').value;
+    if (!dtDeRaw || !dtAteRaw) { setDashComprasStatus('Selecione o período.', 'error'); return; }
+    if (dtDeRaw > dtAteRaw)    { setDashComprasStatus('Data inicial deve ser ≤ data final.', 'error'); return; }
+
+    const btn = document.getElementById('btnComprasDash');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Aguarde…';
+    document.getElementById('dashComprasKpis').style.display = 'none';
+    document.getElementById('dashComprasGrid').style.display = 'none';
+
+    try {
+      setDashComprasStatus('Buscando dados…');
+      const rows   = await fetchCompras(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelComprasDash');
+      const grupos = agruparCompras(rows);
+      renderDashboardCompras(rows, grupos);
+      setDashComprasStatus(`Dashboard atualizado — ${rows.length} registro(s).`, 'ok');
+    } catch (err) {
+      setDashComprasStatus(err.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Gerar Dashboard';
+    }
+  }
+
+  function renderDashboardCompras(rows, grupos) {
+    const nfs     = new Set(rows.map(r => r.controle)).size;
+    const forn    = new Set(rows.map(r => r.codfornecedor)).size;
+    const total   = grupos.reduce((s, g) => s + g.valor, 0);
+    const ticket  = nfs > 0 ? total / nfs : 0;
+
+    document.getElementById('kpiComprasNFs').textContent    = nfs;
+    document.getElementById('kpiComprasForn').textContent   = forn;
+    document.getElementById('kpiComprasTotal').textContent  = 'R$ ' + fmtNum(total);
+    document.getElementById('kpiComprasTicket').textContent = 'R$ ' + fmtNum(ticket);
+    document.getElementById('dashComprasKpis').style.display = 'flex';
+
+    const byForn = {}, byUF = {}, byProd = {};
+    grupos.forEach(g => {
+      byForn[g.fornecedor] = (byForn[g.fornecedor] || 0) + g.valor;
+      byUF[g.uf]           = (byUF[g.uf]           || 0) + g.valor;
+      byProd[g.produto]    = (byProd[g.produto]     || 0) + g.valor;
+    });
+
+    const top10Forn = Object.entries(byForn).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const top10Prod = Object.entries(byProd).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const ufs       = Object.entries(byUF).sort((a, b) => b[1] - a[1]);
+
+    destroyChartsCompras();
+
+    _chartsCompras.forn = new Chart(document.getElementById('chartComprasForn'), {
+      type: 'bar',
+      data: {
+        labels: top10Forn.map(([k]) => truncate(k)),
+        datasets: [{ data: top10Forn.map(([, v]) => v),
+          backgroundColor: top10Forn.map((_, i) => PALETTE[i % PALETTE.length] + 'CC'),
+          borderColor:     top10Forn.map((_, i) => PALETTE[i % PALETTE.length]),
+          borderWidth: 1, borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' R$ ' + fmtNum(ctx.raw) } } },
+        scales: { x: { ticks: { callback: v => 'R$ ' + fmtNum(v), font: { size: 10 } }, grid: { color: '#f0f2f5' } },
+                  y: { ticks: { font: { size: 10 } } } } }
+    });
+
+    _chartsCompras.uf = new Chart(document.getElementById('chartComprasUF'), {
+      type: 'doughnut',
+      data: {
+        labels: ufs.map(([k]) => k),
+        datasets: [{ data: ufs.map(([, v]) => v),
+          backgroundColor: ufs.map((_, i) => PALETTE[i % PALETTE.length] + 'CC'),
+          borderColor: '#fff', borderWidth: 2 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12, padding: 10 } },
+                   tooltip: { callbacks: { label: ctx => ' R$ ' + fmtNum(ctx.raw) } } } }
+    });
+
+    _chartsCompras.prod = new Chart(document.getElementById('chartComprasProd'), {
+      type: 'bar',
+      data: {
+        labels: top10Prod.map(([k]) => truncate(k, 32)),
+        datasets: [{ data: top10Prod.map(([, v]) => v),
+          backgroundColor: PALETTE[0] + 'BB', borderColor: PALETTE[0],
+          borderWidth: 1, borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' R$ ' + fmtNum(ctx.raw) } } },
+        scales: { x: { ticks: { callback: v => 'R$ ' + fmtNum(v), font: { size: 10 } }, grid: { color: '#f0f2f5' } },
+                  y: { ticks: { font: { size: 10 } } } } }
+    });
+
+    document.getElementById('dashComprasGrid').style.display = 'grid';
+  }
+
+  // — Detalhes compras —
+  function setComprasStatus(msg, type = '') {
+    const el = document.getElementById('comprasStatus');
+    el.textContent = msg; el.className = type;
+  }
+
+  async function gerarCompras() {
+    const dtDeRaw  = document.getElementById('compras_de').value;
+    const dtAteRaw = document.getElementById('compras_ate').value;
+    if (!dtDeRaw || !dtAteRaw) { setComprasStatus('Selecione o período.', 'error'); return; }
+    if (dtDeRaw > dtAteRaw)    { setComprasStatus('Data inicial deve ser ≤ data final.', 'error'); return; }
+
+    const btn = document.getElementById('btnCompras');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Aguarde…';
+    document.getElementById('comprasWrapper').style.display = 'none';
+    document.getElementById('comprasSummary').style.display = 'none';
+
+    try {
+      setComprasStatus('Buscando dados…');
+      const rows   = await fetchCompras(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelComprasDet');
+      const grupos = agruparCompras(rows);
+      renderTabelaCompras(grupos, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      setComprasStatus(`Relatório gerado — ${grupos.length} grupo(s).`, 'ok');
+    } catch (err) {
+      setComprasStatus(err.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Gerar Relatório';
+    }
+  }
+
+  function renderTabelaCompras(grupos, dtDe, dtAte) {
+    _gruposCompras = grupos;
+    const tbody = document.getElementById('tbodyCompras');
+    tbody.innerHTML = '';
+
+    if (!grupos.length) {
+      document.getElementById('tblComprasEmpty').style.display = '';
+      document.getElementById('tfootCompras').style.display    = 'none';
+      return;
+    }
+    document.getElementById('tblComprasEmpty').style.display = 'none';
+    document.getElementById('tfootCompras').style.display    = '';
+
+    let totQtde = 0, totValor = 0;
+    grupos.forEach(g => {
+      totQtde += g.qtde; totValor += g.valor;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${g.codproduto}</td><td>${g.produto}</td>
+        <td>${g.codfornecedor}</td><td>${g.fornecedor}</td>
+        <td>${g.cidade}</td><td>${g.uf}</td>
+        <td class="num">${fmtNum(g.qtde)}</td>
+        <td class="num">${g.qtde > 0 ? fmtNum(g.valor / g.qtde) : '—'}</td>
+        <td class="num">${fmtNum(g.valor)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('ftComprasQtde').textContent  = fmtNum(totQtde);
+    document.getElementById('ftComprasTotal').textContent = 'R$ ' + fmtNum(totValor);
+
+    document.getElementById('comprasCardItens').textContent = grupos.length;
+    document.getElementById('comprasCardTotal').textContent = 'R$ ' + fmtNum(totValor);
+
+    const fmtDate = d => d.split('.').reverse().join('/');
+    const periodo = `Período: ${fmtDate(dtDe)} a ${fmtDate(dtAte)}`;
+    document.getElementById('comprasPeriodo').textContent   = `${fmtDate(dtDe)} a ${fmtDate(dtAte)}`;
+    document.getElementById('phEmpresaCompras').textContent = _empresa?.nome ?? '';
+    document.getElementById('phPeriodoCompras').textContent = periodo;
+    document.getElementById('phUsuarioCompras').textContent = _nomeUsuario;
+    document.getElementById('phDataHoraCompras').textContent =
+      new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+    document.getElementById('comprasSummary').style.display = 'flex';
+    document.getElementById('comprasWrapper').style.display = '';
+  }
+
+  function exportarCSVCompras() {
+    if (!_gruposCompras.length) return;
+    const periodo = document.getElementById('comprasPeriodo').textContent.replace(/\//g, '-');
+    const header  = ['Cod.Prod.','Produto','Cod.Forn.','Fornecedor','Cidade','UF',
+                     'Qtde','Valor Unit. (R$)','Total (R$)'];
+    const data = _gruposCompras.map(g => [
+      g.codproduto, g.produto, g.codfornecedor, g.fornecedor, g.cidade, g.uf,
+      g.qtde, g.qtde > 0 ? (g.valor / g.qtde).toFixed(2) : '', g.valor.toFixed(2),
+    ]);
+    downloadCSV(`${_empresa?.nome ?? 'BI'}_Compras_${periodo}.csv`, [header, ...data]);
+  }
+
+  function gerarPDFCompras() {
+    const original = document.title;
+    const periodo  = document.getElementById('comprasPeriodo').textContent.replace(/\//g, '-');
+    document.title = `${_empresa?.nome ?? 'BI'}_Compras_${periodo}`;
+    window.print();
+    document.title = original;
+  }
+
+  // ── DASHBOARD PRODUCAO ───────────────────────────────────────────────────
+  let _chartsProd = { top: null, unidade: null, comps: null };
+
+  function destroyChartsProd() {
+    Object.keys(_chartsProd).forEach(k => {
+      if (_chartsProd[k]) { _chartsProd[k].destroy(); _chartsProd[k] = null; }
+    });
+  }
+
+  function setDashProdStatus(msg, type = '') {
+    const el = document.getElementById('dashProdStatus');
+    el.textContent = msg; el.className = 'dash-status' + (type ? ' ' + type : '');
+  }
+
+  async function gerarDashboardProducao() {
+    const dtDeRaw  = document.getElementById('prodd_de').value;
+    const dtAteRaw = document.getElementById('prodd_ate').value;
+    if (!dtDeRaw || !dtAteRaw) { setDashProdStatus('Selecione o periodo.', 'error'); return; }
+    if (dtDeRaw > dtAteRaw)    { setDashProdStatus('Data inicial deve ser <= data final.', 'error'); return; }
+
+    const btn = document.getElementById('btnProdDash');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Aguarde...';
+    document.getElementById('dashProdKpis').style.display = 'none';
+    document.getElementById('dashProdGrid').style.display = 'none';
+
+    try {
+      setDashProdStatus('Buscando dados...');
+      const rows = await fetchProducao(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelProducaoDash');
+      renderDashboardProducao(rows);
+      setDashProdStatus(`Dashboard atualizado — ${rows.length} produto(s).`, 'ok');
+    } catch (err) {
+      setDashProdStatus(err.message, 'error');
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Gerar Dashboard';
+    }
+  }
+
+  function renderDashboardProducao(rows) {
+    const totQtde  = rows.reduce((s, r) => s + toNum(r.qtdeproduzida), 0);
+    const comComps = rows.filter(r => r.componentes && r.componentes.length > 0).length;
+
+    document.getElementById('kpiProdItens').textContent = rows.length;
+    document.getElementById('kpiProdQtde').textContent  = fmtNum(totQtde);
+    document.getElementById('kpiProdComps').textContent = comComps;
+    document.getElementById('dashProdKpis').style.display = 'flex';
+
+    const top10 = [...rows]
+      .sort((a, b) => toNum(b.qtdeproduzida) - toNum(a.qtdeproduzida))
+      .slice(0, 10);
+
+    const byUnidade = {};
+    rows.forEach(r => {
+      byUnidade[r.unidade] = (byUnidade[r.unidade] || 0) + toNum(r.qtdeproduzida);
+    });
+    const unidades = Object.entries(byUnidade).sort((a, b) => b[1] - a[1]);
+
+    destroyChartsProd();
+
+    _chartsProd.top = new Chart(document.getElementById('chartProdTop'), {
+      type: 'bar',
+      data: {
+        labels: top10.map(r => truncate(r.produto, 42)),
+        datasets: [{
+          data: top10.map(r => toNum(r.qtdeproduzida)),
+          backgroundColor: top10.map((_, i) => PALETTE[i % PALETTE.length] + 'CC'),
+          borderColor:     top10.map((_, i) => PALETTE[i % PALETTE.length]),
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ' ' + fmtNum(ctx.raw) } }
+        },
+        scales: {
+          x: { ticks: { callback: v => fmtNum(v), font: { size: 10 } }, grid: { color: '#f0f2f5' } },
+          y: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    _chartsProd.unidade = new Chart(document.getElementById('chartProdUnidade'), {
+      type: 'doughnut',
+      data: {
+        labels: unidades.map(([k]) => k),
+        datasets: [{
+          data: unidades.map(([, v]) => v),
+          backgroundColor: unidades.map((_, i) => PALETTE[i % PALETTE.length] + 'CC'),
+          borderColor: '#fff', borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12, padding: 10 } },
+          tooltip: { callbacks: { label: ctx => ' ' + fmtNum(ctx.raw) } }
+        }
+      }
+    });
+
+    _chartsProd.comps = new Chart(document.getElementById('chartProdComps'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Com componentes', 'Sem componentes'],
+        datasets: [{
+          data: [comComps, rows.length - comComps],
+          backgroundColor: [PALETTE[2] + 'CC', PALETTE[6] + 'CC'],
+          borderColor: '#fff', borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12, padding: 10 } },
+          tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + ' produto(s)' } }
+        }
+      }
+    });
+
+    document.getElementById('dashProdGrid').style.display = 'grid';
+  }
+
+  // ── PRODUCAO (detalhes) ───────────────────────────────────────────────────
+  function setProdStatus(msg, type = '') {
+    const el = document.getElementById('prodStatus');
+    el.textContent = msg; el.className = type;
+  }
+
+  async function fetchProducao(dtDe, dtAte, relSelId) {
+    const selVal = document.getElementById(relSelId).value;
+    if (selVal) _relatorioProducao = JSON.parse(selVal);
+    if (!_relatorioProducao) throw new Error('Nenhum relatório de produção configurado.');
+    const url = `${_empresa.api_base}${_relatorioProducao.endpoint}?dt_de=${dtDe}&dt_ate=${dtAte}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${_token}` } });
+    if (!res.ok) throw new Error(`Erro ao buscar dados (HTTP ${res.status})`);
+    return res.json();
+  }
+
+  async function gerarProducao() {
+    const dtDeRaw  = document.getElementById('prod_de').value;
+    const dtAteRaw = document.getElementById('prod_ate').value;
+    if (!dtDeRaw || !dtAteRaw) { setProdStatus('Selecione o período.', 'error'); return; }
+    if (dtDeRaw > dtAteRaw)    { setProdStatus('Data inicial deve ser ≤ data final.', 'error'); return; }
+
+    const btn = document.getElementById('btnProd');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Aguarde…';
+    document.getElementById('prodWrapper').style.display = 'none';
+
+    try {
+      setProdStatus('Buscando dados…');
+      const rows = await fetchProducao(dateToApi(dtDeRaw), dateToApi(dtAteRaw), 'selRelProducaoDet');
+      renderTabelaProducao(rows, dateToApi(dtDeRaw), dateToApi(dtAteRaw));
+      setProdStatus(`Relatório gerado — ${rows.length} registro(s).`, 'ok');
+    } catch (err) {
+      setProdStatus(err.message, 'error');
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Gerar Relatório';
+    }
+  }
+
+  function renderTabelaProducao(rows, dtDe, dtAte) {
+    _rowsProducao = rows;
+    const tbody = document.getElementById('tbodyProd');
+    const thead = document.getElementById('theadProd');
+    tbody.innerHTML = '';
+    thead.innerHTML = '';
+
+    if (!rows.length) {
+      document.getElementById('prodEmpty').style.display = '';
+      document.getElementById('prodSummary').style.display = 'none';
+      document.getElementById('prodWrapper').style.display = '';
+      return;
+    }
+    document.getElementById('prodEmpty').style.display = 'none';
+
+    const campoLabel = _relatorioProducao?.campo_exibicao ?? '';
+    const showCampo  = campoLabel !== '';
+    thead.innerHTML = `<tr>
+      <th>Cód.</th>
+      <th>Produto</th>
+      <th class="num">Qtde Produzida</th>
+      ${showCampo ? `<th>${campoLabel}</th>` : ''}
+      <th style="text-align:center">Componentes</th>
+    </tr>`;
+
+    let totQtde = 0;
+    rows.forEach((row, i) => {
+      totQtde += toNum(row.qtdeproduzida);
+      const hasComps = row.componentes && row.componentes.length > 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.codproduto}</td>
+        <td>${row.produto}</td>
+        <td class="num">${fmtNum(row.qtdeproduzida)}</td>
+        ${showCampo ? `<td>${row[campoLabel] ?? '—'}</td>` : ''}
+        <td style="text-align:center">
+          ${hasComps
+            ? `<button class="btn-icon" onclick="toggleComps(${i})">&#9654; ${row.componentes.length}</button>`
+            : '—'}
+        </td>`;
+      tbody.appendChild(tr);
+
+      if (hasComps) {
+        const trComp = document.createElement('tr');
+        trComp.id = `comps-${i}`;
+        trComp.style.display = 'none';
+        trComp.innerHTML = `<td colspan="${showCampo ? 5 : 4}" style="padding:0;background:#f0f4fb">
+          <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+            <thead>
+              <tr style="background:#dce4f5">
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Cód. Comp.</th>
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Componente</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Qtde Unit.</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Qtde Total</th>
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Und.</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${row.componentes.map(c => `
+                <tr>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${c.codprodcomp}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${c.nomeprodutocomp}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${toNum(c.qtdeunitaria).toLocaleString('pt-BR', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(c.qtdetotal)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${c.undcomp}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </td>`;
+        tbody.appendChild(trComp);
+      }
+    });
+
+    document.getElementById('prodCardItens').textContent = rows.length;
+    document.getElementById('prodCardQtde').textContent  = fmtNum(totQtde);
+    document.getElementById('prodSummary').style.display = 'flex';
+
+    const fmtDate = d => d.split('.').reverse().join('/');
+    document.getElementById('prodPeriodo').textContent = `${fmtDate(dtDe)} a ${fmtDate(dtAte)}`;
+    document.getElementById('prodWrapper').style.display = '';
+
+    // Totalização geral de componentes agrupada por grupo
+    const grupoMap = new Map();
+    rows.forEach(row => {
+      (row.componentes || []).forEach(c => {
+        const grpKey  = c.codgrupocomp ?? 0;
+        const compKey = c.codprodcomp;
+        if (!grupoMap.has(grpKey)) {
+          grupoMap.set(grpKey, { nome: c.nomegrupocomp ?? 'Sem Grupo', comps: new Map() });
+        }
+        const comps = grupoMap.get(grpKey).comps;
+        if (!comps.has(compKey)) {
+          comps.set(compKey, { cod: c.codprodcomp, nome: c.nomeprodutocomp, und: c.undcomp, qtde: 0 });
+        }
+        comps.get(compKey).qtde += toNum(c.qtdetotal);
+      });
+    });
+
+    const tbodyTotal = document.getElementById('tbodyCompsTotal');
+    tbodyTotal.innerHTML = '';
+    const totalWrapper = document.getElementById('prodCompsTotalWrapper');
+
+    if (grupoMap.size > 0) {
+      grupoMap.forEach(grp => {
+        const trGrp = document.createElement('tr');
+        trGrp.innerHTML = `<td colspan="4" style="background:#dce4f5;font-weight:600;color:#2d4a8a;padding:7px 12px">${grp.nome}</td>`;
+        tbodyTotal.appendChild(trGrp);
+
+        const sorted = [...grp.comps.values()].sort((a, b) => b.qtde - a.qtde);
+        sorted.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.cod}</td>
+            <td>${item.nome}</td>
+            <td>${item.und}</td>
+            <td class="num">${fmtNum(item.qtde)}</td>`;
+          tbodyTotal.appendChild(tr);
+        });
+      });
+      totalWrapper.style.display = '';
+    } else {
+      totalWrapper.style.display = 'none';
+    }
+  }
+
+  function toggleComps(i) {
+    const trComp = document.getElementById(`comps-${i}`);
+    const btn    = trComp.previousElementSibling.querySelector('.btn-icon');
+    const open   = trComp.style.display === 'none';
+    trComp.style.display = open ? '' : 'none';
+    btn.innerHTML = (open ? '&#9660; ' : '&#9654; ') + (btn.textContent.trim().split(' ')[1] || '');
+  }
+
+  function gerarPDFProducao() {
+    const original = document.title;
+    const periodo  = document.getElementById('prodPeriodo').textContent.replace(/\//g, '-');
+    document.title = `${_empresa?.nome ?? 'BI'}_Producao_${periodo}`;
+    window.print();
+    document.title = original;
+  }
+
+  // ── CSV ───────────────────────────────────────────────────────────────────
+  function csvVal(v) {
+    const s = String(v ?? '');
+    return s.includes(';') || s.includes('"') || s.includes('\n')
+      ? '"' + s.replace(/"/g, '""') + '"'
+      : s;
+  }
+
+  function downloadCSV(filename, rows) {
+    const bom  = '﻿';
+    const body = rows.map(r => r.map(csvVal).join(';')).join('\r\n');
+    const blob = new Blob([bom + body], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), { href: url, download: filename });
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  function exportarCSVVendas() {
+    if (!_gruposVendas.length) return;
+    const periodo = document.getElementById('reportPeriodo').textContent
+      .replace('Período: ', '').split(' —')[0].replace(/\//g, '-');
+    const header = ['Cod.Prod.','Descricao','Cod.Vend.','Vendedor','Cod.Cli.','Cliente','Nº DAV',
+                    'Venda (R$)','Qtde','Und.','Custo (R$)','Qtde Conv.','Und. Conv.',
+                    'Margem Contrib. (R$)','Margem (%)'];
+    const data = _gruposVendas.map(r => {
+      const qtde  = toNum(r.qtdevendida);
+      const custo = qtde * toNum(r.precocustoitem);
+      const venda = qtde * toNum(r.valorunit);
+      const margem = venda > 0 ? ((venda - custo) / venda * 100) : 0;
+      return [r.codprod, r.descproditemvenda, r.codvendedor, r.nomevendedor,
+              r.codcliente, r.nomecliente, r.ndav ?? '',
+              venda.toFixed(2), qtde, r.und ?? '—', custo.toFixed(2),
+              toNum(r.qtdeconvertidavd), r.unconvertida || '—',
+              (venda - custo).toFixed(2), margem.toFixed(2)];
+    });
+    downloadCSV(`${_empresa?.nome ?? 'BI'}_Vendas_${periodo}.csv`, [header, ...data]);
+  }
+
+  function exportarCSVProducao() {
+    if (!_rowsProducao.length) return;
+    const periodo = document.getElementById('prodPeriodo').textContent.replace(/\//g, '-');
+    const header = ['Cod.Produto','Produto','Qtde Produzida','Unidade',
+                    'Cod.Comp.','Componente','Qtde Unit.','Qtde Total','Und.Comp.'];
+    const data = [];
+    _rowsProducao.forEach(r => {
+      if (!r.componentes || !r.componentes.length) {
+        data.push([r.codproduto, r.produto, r.qtdeproduzida, r.unidade, '', '', '', '', '']);
+      } else {
+        r.componentes.forEach(c => {
+          data.push([r.codproduto, r.produto, r.qtdeproduzida, r.unidade,
+                     c.codprodcomp, c.nomeprodutocomp,
+                     c.qtdeunitaria, c.qtdetotal, c.undcomp]);
+        });
+      }
+    });
+    downloadCSV(`${_empresa?.nome ?? 'BI'}_Producao_${periodo}.csv`, [header, ...data]);
+  }
+
+  // ── VENDA DETALHADA ───────────────────────────────────────────────────────
+  let _rowsVendaDet = [];
+
+  function setVdetStatus(msg, type = '') {
+    const el = document.getElementById('vendaDetStatus');
+    el.textContent = msg; el.className = type;
+  }
+
+  async function gerarVendaDet() {
+    const dtDeRaw  = document.getElementById('vdet_de').value;
+    const dtAteRaw = document.getElementById('vdet_ate').value;
+    if (!dtDeRaw || !dtAteRaw) { setVdetStatus('Selecione o período.', 'error'); return; }
+    if (dtDeRaw > dtAteRaw)    { setVdetStatus('Data inicial deve ser ≤ data final.', 'error'); return; }
+    if (!_relatorioVendaDet)   { setVdetStatus('Nenhum relatório configurado.', 'error'); return; }
+
+    const btn = document.getElementById('btnVendaDet');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Aguarde…';
+    document.getElementById('vendaDetSummary').style.display = 'none';
+    document.getElementById('vendaDetWrapper').style.display = 'none';
+
+    try {
+      const selVal = document.getElementById('selRelVendaDet').value;
+      if (selVal) _relatorioVendaDet = JSON.parse(selVal);
+      const url = `${_empresa.api_base}${_relatorioVendaDet.endpoint}?dt_de=${dateToApi(dtDeRaw)}&dt_ate=${dateToApi(dtAteRaw)}`;
+      setVdetStatus(`Buscando: ${url}`);
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${_token}` } });
+      if (!res.ok) throw new Error(`HTTP ${res.status} — ${url}`);
+      const rows = await res.json();
+      if (rows.length > 0) console.log('[VendaDet] campos:', Object.keys(rows[0]), rows[0]);
+      renderVendaDet(rows, dtDeRaw, dtAteRaw);
+      setVdetStatus(`Relatório gerado — ${rows.length} registro(s).`, 'ok');
+    } catch (err) {
+      setVdetStatus(err.message, 'error');
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Gerar Relatório';
+    }
+  }
+
+  function renderVendaDet(rows, dtDe, dtAte) {
+    _rowsVendaDet = rows;
+    const tbody = document.getElementById('tbodyVendaDet');
+    tbody.innerHTML = '';
+
+    const periodo = `${dtDe.split('-').reverse().join('/')} — ${dtAte.split('-').reverse().join('/')}`;
+    document.getElementById('vendaDetPeriodo').textContent = `Período: ${periodo}`;
+
+    if (!rows.length) {
+      document.getElementById('tblVdetEmpty').style.display = '';
+      document.getElementById('tfootVendaDet').style.display = 'none';
+      document.getElementById('vendaDetSummary').style.display = 'none';
+      document.getElementById('vendaDetWrapper').style.display = '';
+      return;
+    }
+    document.getElementById('tblVdetEmpty').style.display = 'none';
+    document.getElementById('tfootVendaDet').style.display = '';
+
+    // Log campos de itens[] e receber[] do primeiro pedido para diagnóstico
+    if (rows[0]?.itens?.length > 0)
+      console.log('[VendaDet] campos de itens[]:', Object.keys(rows[0].itens[0]), rows[0].itens[0]);
+    if (rows[0]?.itens?.length > 0)
+      console.log('[VendaDet] campos de itens[]:', Object.keys(rows[0].itens[0]), rows[0].itens[0]);
+
+    let totTotal = 0, totCusto = 0, totItens = 0;
+
+    rows.forEach((ped, i) => {
+      const itens   = ped.itens   || [];
+      const receber = ped.receber || [];
+      const pedTotal = toNum(ped.totalprodutos);
+
+      // Custo: calcula a partir dos itens
+      let pedCusto = 0;
+      itens.forEach(it => {
+        const q = toNum(it.qtde ?? it.qtdevendida);
+        pedCusto += q * toNum(it.prcu1m ?? it.precocustoitem ?? it.custo ?? 0);
+      });
+
+      totTotal += pedTotal;
+      totCusto += pedCusto;
+      totItens += itens.length;
+
+      const statusRaw = (ped.cancelado === 'S' || ped.cancelado === 1) ? 'Cancelado' : (ped.statuspedido || ped.status || '');
+      const statusBadge = statusRaw === 'Cancelado'
+        ? '<span class="badge badge-red">Cancelado</span>'
+        : statusRaw === 'F'
+          ? '<span class="badge badge-green">Finalizado</span>'
+          : statusRaw
+            ? `<span class="badge badge-yellow">${statusRaw}</span>`
+            : '—';
+
+      // Linha do pedido (nível cabeçalho)
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${ped.controle ?? '—'}</strong></td>
+        <td>${ped.datafec ?? '—'}</td>
+        <td>${ped.vendedor ?? '—'}</td>
+        <td>${ped.cliente ?? '—'}</td>
+        <td>${ped.cep ?? '—'}</td>
+        <td class="num"><strong>${fmtNum(pedTotal)}</strong></td>
+        <td>${statusBadge}</td>
+        <td style="text-align:center">
+          ${itens.length > 0
+            ? `<button class="btn-icon" id="btn-vdet-items-${i}" data-count="${itens.length}" onclick="toggleVdetItems(${i})">&#9654; ${itens.length}</button>`
+            : '—'}
+        </td>
+        <td style="text-align:center">
+          ${receber.length > 0
+            ? `<button class="btn-icon" id="btn-vdet-receber-${i}" data-count="${receber.length}" onclick="toggleVdetReceber(${i})">&#9654; ${receber.length}</button>`
+            : '—'}
+        </td>`;
+      tbody.appendChild(tr);
+
+      if (itens.length > 0) {
+        const trItems = document.createElement('tr');
+        trItems.id = `vdet-items-${i}`;
+        trItems.style.display = 'none';
+        trItems.innerHTML = `<td colspan="9" style="padding:0;background:#f0f4fb">
+          <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+            <thead>
+              <tr style="background:#dce4f5">
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Cód. Prod.</th>
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Nome Produto</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Preço Unit. (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Qtde</th>
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Und.</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Total (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Custo Unit. (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Custo Total (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Qtde Conv.</th>
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Und. Conv.</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Margem Contrib. (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Margem (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itens.map(it => {
+                const qtde     = toNum(it.qtde ?? it.qtdevendida);
+                const vUnit    = toNum(it.valorunit ?? it.preco ?? it.valorunitario);
+                const total    = toNum(it.total ?? it.valortotal ?? (qtde * vUnit));
+                const custoUni = toNum(it.prcu1m ?? it.precocustoitem ?? it.custo);
+                const custoTot = qtde * custoUni;
+                const margem   = total > 0 ? ((total - custoTot) / total) * 100 : 0;
+                const und      = it.und ?? it.unidade ?? '—';
+                const descr    = it.decprod ?? it.descricao ?? it.produto ?? it.nome ?? '—';
+                const codprod  = it.codprod ?? it.cod ?? '—';
+                const hasConv  = (it.unconvertida ?? it.undconvertida ?? '').trim() !== '';
+                const undConv  = it.unconvertida ?? it.undconvertida ?? '';
+                const qtdeConv = toNum(it.qtdeconvertidavd ?? it.qtdeconvertida);
+                return `<tr>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${codprod}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${descr}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(vUnit)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(qtde)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${und}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(total)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(custoUni)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(custoTot)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${hasConv ? fmtNum(qtdeConv) : '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${hasConv ? undConv : '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(total - custoTot)}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${badgeMargem(margem)}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </td>`;
+        tbody.appendChild(trItems);
+      }
+
+      if (receber.length > 0) {
+        const trRec = document.createElement('tr');
+        trRec.id = `vdet-receber-${i}`;
+        trRec.style.display = 'none';
+        trRec.innerHTML = `<td colspan="9" style="padding:0;background:#f5f0fb">
+          <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+            <thead>
+              <tr style="background:#e8dff5">
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Descrição Lançamento</th>
+                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Espécie</th>
+                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Valor Original (R$)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${receber.map(rc => `<tr>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${rc.descricaolancamento ?? '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${rc.especie ?? '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(toNum(rc.valororiginal))}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </td>`;
+        tbody.appendChild(trRec);
+      }
+    });
+
+    const totMargem = totTotal > 0 ? ((totTotal - totCusto) / totTotal) * 100 : 0;
+    document.getElementById('ftVdetTotal').textContent = 'R$ ' + fmtNum(totTotal);
+
+    document.getElementById('vdetCardItens').textContent     = totItens;
+    document.getElementById('vdetCardVenda').textContent     = fmtNum(totTotal);
+    document.getElementById('vdetCardCusto').textContent     = fmtNum(totCusto);
+    document.getElementById('vdetCardMargem').textContent    = fmtNum(totTotal - totCusto);
+    document.getElementById('vdetCardMargemPct').textContent = fmtPct(totMargem);
+
+    document.getElementById('vendaDetSummary').style.display = '';
+    document.getElementById('vendaDetWrapper').style.display = '';
+  }
+
+  function toggleVdetItems(i) {
+    const tr  = document.getElementById(`vdet-items-${i}`);
+    const btn = document.getElementById(`btn-vdet-items-${i}`);
+    const open = tr.style.display === 'none';
+    tr.style.display = open ? '' : 'none';
+    btn.innerHTML = (open ? '&#9660; ' : '&#9654; ') + btn.dataset.count;
+  }
+
+  function toggleVdetReceber(i) {
+    const tr  = document.getElementById(`vdet-receber-${i}`);
+    const btn = document.getElementById(`btn-vdet-receber-${i}`);
+    const open = tr.style.display === 'none';
+    tr.style.display = open ? '' : 'none';
+    btn.innerHTML = (open ? '&#9660; ' : '&#9654; ') + btn.dataset.count;
+  }
+
+  function exportarCSVVendaDet() {
+    if (!_rowsVendaDet.length) return;
+    const periodo = document.getElementById('vendaDetPeriodo').textContent
+      .replace('Período: ', '').replace(/\//g, '-');
+    const header = ['Nº Controle','Data Fec.','Vendedor','Cliente','CEP','Status',
+                    'Cod.Prod.','Nome Produto','Preco Unit.(R$)','Qtde','Und.',
+                    'Total(R$)','Custo Unit.(R$)','Custo Total(R$)',
+                    'Qtde Conv.','Und. Conv.','Margem Contrib.(R$)','Margem(%)'];
+    const data = [];
+    _rowsVendaDet.forEach(ped => {
+      const itens      = ped.itens || [];
+      const statusRaw  = ped.cancelado ? 'Cancelado' : (ped.statuspedido || ped.status || '');
+      itens.forEach(it => {
+        const qtde     = toNum(it.qtde ?? it.qtdevendida);
+        const vUnit    = toNum(it.valorunit ?? it.preco ?? it.valorunitario);
+        const total    = toNum(it.total ?? it.valortotal ?? (qtde * vUnit));
+        const custoUni = toNum(it.prcu1m ?? it.precocustoitem ?? it.custo);
+        const custoTot = qtde * custoUni;
+        const margem   = total > 0 ? ((total - custoTot) / total * 100) : 0;
+        const hasConv  = (it.unconvertida ?? it.undconvertida ?? '').trim() !== '';
+        data.push([
+          ped.controle ?? '', ped.datafec ?? '', ped.vendedor ?? '', ped.cliente ?? '',
+          ped.cep ?? '', statusRaw,
+          it.codprod ?? it.cod ?? '', it.decprod ?? it.descricao ?? it.produto ?? '',
+          vUnit.toFixed(2), qtde.toFixed(2), it.und ?? it.unidade ?? '',
+          total.toFixed(2), custoUni.toFixed(2), custoTot.toFixed(2),
+          hasConv ? toNum(it.qtdeconvertidavd ?? it.qtdeconvertida).toFixed(2) : '',
+          hasConv ? (it.unconvertida ?? it.undconvertida ?? '') : '',
+          (total - custoTot).toFixed(2), margem.toFixed(2)
+        ]);
+      });
+    });
+    downloadCSV(`${_empresa?.nome ?? 'BI'}_VendaDetalhada_${periodo}.csv`, [header, ...data]);
   }
 
   // ── PDF ───────────────────────────────────────────────────────────────────
@@ -1355,15 +2741,20 @@
     const hoje = new Date(), sete = new Date(hoje);
     sete.setDate(sete.getDate() - 7);
     const iso = d => d.toISOString().slice(0, 10);
-    ['dd_de','dt_de'].forEach(id => document.getElementById(id).value = iso(sete));
-    ['dd_ate','dt_ate'].forEach(id => document.getElementById(id).value = iso(hoje));
+    ['dd_de','dt_de','compras_de','comprasd_de','prod_de','prodd_de','vdet_de'].forEach(id => document.getElementById(id).value = iso(sete));
+    ['dd_ate','dt_ate','compras_ate','comprasd_ate','prod_ate','prodd_ate','vdet_ate'].forEach(id => document.getElementById(id).value = iso(hoje));
 
     document.getElementById('lLogin').addEventListener('keydown',    e => { if (e.key === 'Enter') document.getElementById('lSenha').focus(); });
     document.getElementById('lSenha').addEventListener('keydown',    e => { if (e.key === 'Enter') fazerLogin(); });
     document.getElementById('adminUsuario').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('adminSenha').focus(); });
     document.getElementById('adminSenha').addEventListener('keydown',   e => { if (e.key === 'Enter') confirmarAdminAuth(); });
-    document.getElementById('selRelatorio').addEventListener('change',  e => { _relatorio = JSON.parse(e.target.value); });
-    document.getElementById('selRelatorioDash').addEventListener('change', e => { _relatorio = JSON.parse(e.target.value); });
+    document.getElementById('selRelatorio').addEventListener('change',      e => { _relatorio = JSON.parse(e.target.value); });
+    document.getElementById('selRelatorioDash').addEventListener('change',  e => { _relatorio = JSON.parse(e.target.value); });
+    document.getElementById('selRelComprasDash').addEventListener('change',  e => { _relatorioCompras  = JSON.parse(e.target.value); });
+    document.getElementById('selRelComprasDet').addEventListener('change',   e => { _relatorioCompras  = JSON.parse(e.target.value); });
+    document.getElementById('selRelProducaoDash').addEventListener('change', e => { _relatorioProducao = JSON.parse(e.target.value); });
+    document.getElementById('selRelProducaoDet').addEventListener('change',  e => { _relatorioProducao = JSON.parse(e.target.value); });
+    document.getElementById('selRelVendaDet').addEventListener('change',     e => { _relatorioVendaDet = JSON.parse(e.target.value); });
 
     carregarEmpresas();
   })();
