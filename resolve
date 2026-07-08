@@ -1,0 +1,129 @@
+You actually have **two separate issues**.
+
+### 1. `credential-manager-core` is not a git command
+
+```
+git: 'credential-manager-core' is not a git command.
+```
+
+This means your Git configuration is trying to use Git Credential Manager Core, but it isn't installed (or was removed).
+
+Check your credential helper:
+
+```bash
+git config --global credential.helper
+```
+
+If it returns:
+
+```text
+manager-core
+```
+
+either:
+
+* Install Git Credential Manager, or
+* Remove that setting:
+
+```bash
+git config --global --unset credential.helper
+```
+
+or use Git's built-in helper:
+
+```bash
+git config --global credential.helper manager
+```
+
+(if your Git version supports it).
+
+---
+
+### 2. Your push was rejected
+
+The important part is:
+
+```
+! [rejected] master -> master (non-fast-forward)
+```
+
+This means **the GitHub repository already has commits that your local branch doesn't**.
+
+Check what's different:
+
+```bash
+git fetch origin
+git log --oneline --graph --all
+```
+
+Then integrate the remote changes.
+
+#### Option A (recommended)
+
+If you want to keep both your local work and the remote work:
+
+```bash
+git pull --rebase origin master
+```
+
+Resolve any conflicts if prompted, then:
+
+```bash
+git push -u origin master
+```
+
+---
+
+#### Option B (overwrite GitHub)
+
+If the GitHub repository only contains something like an auto-generated README and you want your local project to replace it:
+
+```bash
+git push --force origin master
+```
+
+**Warning:** This deletes the remote history.
+
+---
+
+## Also check your branch name
+
+Many repositories now use `main` instead of `master`.
+
+Run:
+
+```bash
+git branch
+```
+
+and
+
+```bash
+git branch -r
+```
+
+If your local branch is `main`, push with:
+
+```bash
+git push -u origin main
+```
+
+---
+
+## To help further
+
+Please paste the output of:
+
+```bash
+git branch -vv
+git remote -v
+git log --oneline --graph --decorate --all -10
+```
+
+That will show exactly why the push is being rejected and the safest command to fix it.
+
+Verifica qual branch está sendo utilizado
+git branch
+
+prevalece o conteúdo da máquina que está realizando o push
+git push --force origin master
