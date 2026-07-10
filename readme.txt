@@ -746,3 +746,72 @@ Deixei os itens "Detalhes" de Compras e Produção como estavam, já que eram os
 
 prompt de exemplo, não utilize.
 consuma https://dbcayemecolchoes.centraldoaplicativo.com.br/sgbrbi/venda/detalhada?dt_de=2026.05.18&dt_ate=2026.05.22 verifique quais relatórios de analise de dados podemos extrair
+
+investigar uso anormal de SSD
+
+
+Analisei sem apagar nada. O problema principal não parece ser “poucos programas”, e sim armazenamento preso em arquivos/caches grandes.
+O C: está crítico:
+118,65 GB total, só 1,12 GB livre (0,9%).
+Maiores culpados encontrados:
+Item	Tamanho aprox.	Observação
+C:\Users\Marcos\AppData\Local\Docker\wsl\disk\docker_data.vhdx	28,3 GiB	Principal vilão. Disco virtual do Docker/WSL.
+C:\pagefile.sys	10,6 GiB	Arquivo de memória virtual do Windows. Normal, mas grande.
+C:\Users\Marcos\AppData\Local\Google\Chrome	5,7 GiB	Cache/perfil do Chrome.
+C:\Users\Marcos\AppData\Local\Microsoft\Outlook	3,6 GiB	Provável arquivo/cache .ost do Outlook.
+C:\Program Files	16,5 GiB	Normal para programas.
+C:\Program Files (x86)	11,5 GiB	Normal para programas.
+C:\ProgramData	2,4 GiB	Normal/moderado.
+C:\projetos	1,3 GiB	Pequeno.
+
+O achado mais importante: o Docker está usando ~28 GB e o docker system df -v retornou erro 500 na API do Docker Desktop. Isso pode indicar Docker Desktop em estado ruim, ou pelo menos que ele não está conseguindo relatar/limpar corretamente o uso interno.
+Minha recomendação de ordem:
+Abrir Docker Desktop e limpar imagens/containers/build cache não usados.
+Primeiro tente algo conservador: docker builder prune.
+Depois, se souber que não precisa dos containers/imagens parados: docker system prune.
+Cuidado com --volumes, porque pode apagar bancos/dados de containers.
+
+Depois de limpar pelo Docker, compactar o docker_data.vhdx.
+Mesmo apagando imagens, o .vhdx pode continuar grande até ser compactado.
+
+Limpar cache do Chrome pelo próprio Chrome, não apagando a pasta inteira.
+
+No Outlook, reduzir cache offline da conta se ele estiver baixando muitos anos de e-mail.
+
+Não mexer primeiro no pagefile.sys; ele é grande, mas o Docker sozinho explica boa parte do sumiço.
+
+Resumo curto: o “erro” mais provável é o Docker Desktop/WSL acumulando ou retendo espaço em docker_data.vhdx. Isso é disparado o maior ponto de recuperação.
+
+11:31
+
+
+
+
+
+
+se eu desinstalar o docker e instalar novamente vai ter uma exclusão natural desse arquivo inchado wsl?
+
+
+
+
+12:40
+
+
+
+
+
+
+Sim, normalmente desinstalar o Docker Desktop remove ou permite remover esse docker_data.vhdx, porque ele pertence ao armazenamento WSL interno do Docker. Mas eu não contaria 100% com uma exclusão “limpa” automática: às vezes sobram pastas em:
+C:\Users\Marcos\AppData\Local\Docker
+e especialmente:
+C:\Users\Marcos\AppData\Local\Docker\wsl\disk\docker_data.vhdx
+O caminho mais seguro seria:
+Se você não precisa de containers, imagens e volumes atuais, desinstale o Docker Desktop.
+Reinicie o Windows.
+Verifique se C:\Users\Marcos\AppData\Local\Docker ainda existe.
+Se ainda existir e você não precisar de nada antigo do Docker, pode apagar essa pasta manualmente.
+Instale o Docker Desktop de novo.
+Atenção: isso apaga imagens, containers, volumes e bancos locais que estejam dentro do Docker. Se você tinha PostgreSQL/MySQL/Redis/etc. com dados importantes em volumes Docker, exporte antes.
+No seu caso, como o arquivo está com ~28,3 GiB e o Docker ainda deu erro 500 ao consultar uso, desinstalar/reinstalar é uma solução razoável se você não tem dados importantes dentro dos containers.
+
+12:41
