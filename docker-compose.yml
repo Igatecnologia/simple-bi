@@ -1,8 +1,10 @@
 services:
   simple-bi:
-    build: .
-    ports:
-      - "3001:3001"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "3001"
     volumes:
       - bi-data:/app/data
     environment:
@@ -10,5 +12,30 @@ services:
       - DB_PATH=/app/data/bi.db
     restart: unless-stopped
 
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - simple-bi
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 12h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done;'"
+
 volumes:
   bi-data:
+  certbot-etc:
+  certbot-webroot:

@@ -814,4 +814,109 @@ Instale o Docker Desktop de novo.
 Atenção: isso apaga imagens, containers, volumes e bancos locais que estejam dentro do Docker. Se você tinha PostgreSQL/MySQL/Redis/etc. com dados importantes em volumes Docker, exporte antes.
 No seu caso, como o arquivo está com ~28,3 GiB e o Docker ainda deu erro 500 ao consultar uso, desinstalar/reinstalar é uma solução razoável se você não tem dados importantes dentro dos containers.
 
-12:41
+
+Vou criar a estrutura de nginx (proxy reverso + Let's Encrypt) integrada ao docker-compose existente, com domínio placeholder bi.example.com para você trocar depois.
+
+Write c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\nginx\conf.d\default.conf
+39 lines
+# Troque bi.example.com pelo domínio real em todo este arquivo.
+
+server {
+    listen 80;
+    server_name bi.example.com;
+
+    # Necessário para o certbot validar o domínio (webroot challenge)
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Todo o resto redireciona para HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name bi.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/bi.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/bi.example.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    location / {
+        proxy_pass http://simple-bi:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade           $http_upgrade;
+        proxy_set_header Connection        "upgrade";
+    }
+}
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\docker-compose.yml
+Added 23 lines
+Write c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\nginx\init-letsencrypt.sh
+47 lines
+#!/usr/bin/env bash
+# Emite o certificado Let's Encrypt inicial para o nginx.
+# Rodar uma única vez, na primeira subida do ambiente em produção.
+#
+# Uso: ./nginx/init-letsencrypt.sh bi.example.com seu@email.com
+
+set -e
+
+DOMAIN="${1:?Uso: $0 <dominio> <email>}"
+EMAIL="${2:?Uso: $0 <dominio> <email>}"
+
+if [ ! -f nginx/conf.d/default.conf ] || grep -q "bi.example.com" nginx/conf.d/default.conf; then
+  echo "Aviso: nginx/conf.d/default.conf ainda usa o domínio placeholder 'bi.example.com'."
+  echo "Troque para '$DOMAIN' nesse arquivo antes de continuar (ou este script fará isso agora)."
+  sed -i "s/bi.example.com/$DOMAIN/g" nginx/conf.d/default.conf
+fi
+
+echo "### Criando certificado dummy para permitir o nginx subir ###"
+docker compose run --rm --entrypoint "\
+  mkdir -p /etc/letsencrypt/live/$DOMAIN && \
+  openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+    -keyout /etc/letsencrypt/live/$DOMAIN/privkey.pem \
+    -out /etc/letsencrypt/live/$DOMAIN/fullchain.pem \
+    -subj '/CN=localhost'" certbot
+
+echo "### Subindo o nginx ###"
+docker compose up -d nginx
+
+echo "### Removendo certificado dummy ###"
+docker compose run --rm --entrypoint "\
+  rm -rf /etc/letsencrypt/live/$DOMAIN && \
+  rm -rf /etc/letsencrypt/archive/$DOMAIN && \
+  rm -rf /etc/letsencrypt/renewal/$DOMAIN.conf" certbot
+
+echo "### Solicitando certificado real da Let's Encrypt ###"
+docker compose run --rm --entrypoint "\
+  certbot certonly --webroot -w /var/www/certbot \
+    -d $DOMAIN \
+    --email $EMAIL \
+    --agree-tos \
+    --no-eff-email" certbot
+
+echo "### Recarregando o nginx com o certificado real ###"
+docker compose exec nginx nginx -s reload
+
+echo "Concluído. Acesse https://$DOMAIN"
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\docker-compose.yml
+Configuração criada:
+
+docker-compose.yml — simple-bi não expõe mais a porta 3001 direto ao host (só via nginx), adicionados serviços nginx (proxy reverso, portas 80/443, com auto-reload a cada 12h para pegar renovações) e certbot (renovação automática do certificado).
+nginx/conf.d/default.conf — HTTP redireciona para HTTPS (exceto o path /.well-known/acme-challenge/ usado pelo certbot); HTTPS faz proxy_pass para simple-bi:3001 com os headers padrão (X-Forwarded-For, X-Forwarded-Proto, etc).
+nginx/init-letsencrypt.sh — script de bootstrap: como o nginx exige um certificado para subir, ele cria um certificado dummy, sobe o nginx, emite o certificado real via certbot (webroot) e recarrega.
+Passos para usar em produção (Linux com Docker):
+
+Trocar bi.example.com pelo domínio real em nginx/conf.d/default.conf (ou deixar o script fazer isso).
+Apontar o DNS do domínio para o IP do servidor.
+chmod +x nginx/init-letsencrypt.sh && ./nginx/init-letsencrypt.sh bi.example.com seu@email.com
+docker compose up -d para os demais serviços.
+Como isso é infraestrutura de deploy e não faz parte do app single-file (index.html/server.js), não alterei nada nesses arquivos — só a camada de proxy/deploy.
