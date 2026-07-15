@@ -25,6 +25,8 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - certbot-etc:/etc/letsencrypt
       - certbot-webroot:/var/www/certbot
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: "/bin/sh -c 'while :; do sleep 12h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     restart: unless-stopped
 
