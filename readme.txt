@@ -450,3 +450,6 @@ Atenção: isso apaga imagens, containers, volumes e bancos locais que estejam d
 No seu caso, como o arquivo está com ~28,3 GiB e o Docker ainda deu erro 500 ao consultar uso, desinstalar/reinstalar é uma solução razoável se você não tem dados importantes dentro dos containers.
 
 12:41
+
+Como instalar docker em windows EC2
+https://www.google.com/search?q=como+instalar+docker+no+ec2+windows+2025&sca_esv=70e0bba46e72b857&sxsrf=APpeQnsm3nhOy4x8aGZcafjenH_RTxFWVQ%3A1784237150470&source=hp&ei=XkxZasyHGb-O5OUPodz46AQ&iflsig=ABILxe8AAAAAallablAllqdYguonPkZZN6OIkcjKlC5C&ved=0ahUKEwjMrq6skdiVAxU_B7kGHSEuHk0Q4dUDCCs&uact=5&oq=como+instalar+docker+no+ec2+windows+2025&gs_lp=Egdnd3Mtd2l6Iihjb21vIGluc3RhbGFyIGRvY2tlciBubyBlYzIgd2luZG93cyAyMDI1MgUQIRigATIFECEYoAEyBRAhGKABMgUQIRigAUjdjQFQAFjEhgFwAHgAkAEAmAG5AqAB8CqqAQkxMS4yNS4zLjG4AQPIAQD4AQGYAiigAqUuwgIIEAAYgAQYsQPCAgsQLhiDARixAxiABMICCBAuGIAEGLEDwgILEAAYgAQYsQMYgwHCAhEQLhiABBixAxiDARjHARjRA8ICDhAuGIAEGLEDGMcBGNEDwgIUEC4YgAQYigUYsQMYgwEYxwEY0QPCAgUQABiABMICCxAAGIAEGIoFGJIDwgIOEAAYgAQYsQMYgwEYyQPCAgUQLhiABMICCxAAGIAEGIoFGLEDwgIREAAYgAQYigUYjQYYsQMYgwHCAgYQABgWGB7CAggQABgWGB4YCsICBRAhGJ8FmAMAkgcINC4zMS40LjGgB5TjAbIHCDQuMzEuNC4xuAelLsIHCzAuNi4yMi4xMS4xyAeqAoAIAQ&sclient=gws-wiz
