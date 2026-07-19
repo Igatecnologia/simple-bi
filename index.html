@@ -245,7 +245,7 @@
 
     .table-scroll { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-    thead th { background: var(--mid); color: #c8d6e5; font-weight: 600; padding: 9px 11px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
+    thead th { background: var(--mid); color: #d4af37; font-weight: 600; padding: 9px 11px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
     thead th.num { text-align: right; }
     tbody tr:nth-child(even) { background: #f8f9fb; }
     tbody tr:hover { background: #eef3fb; }
@@ -477,11 +477,11 @@
           </button>
           <button class="nav-item nav-child" id="navRel" onclick="navTo('relatorios')">
             <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-            Detalhes
+            Visão Sintética
           </button>
           <button class="nav-item nav-child" id="navVendaDet" onclick="navTo('vendadet')">
             <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/><polyline points="12 17 14 19 18 15"/></svg>
-            Detalhada
+            Visão Detalhada
           </button>
 
           <!-- Compras -->
@@ -967,11 +967,11 @@
             <table>
               <thead>
                 <tr>
-                  <th>Nº DAV</th>
+                  <th>#</th>
                   <th>Data Fec.</th>
                   <th>Vendedor</th>
                   <th>Cliente</th>
-                  <th>CEP</th>
+                  <th>Nº DAV</th>
                   <th class="num">Total (R$)</th>
                   <th>Status</th>
                   <th style="text-align:center">Itens</th>
@@ -2564,7 +2564,7 @@
         <td>${ped.datafec ?? '—'}</td>
         <td>${ped.vendedor ?? '—'}</td>
         <td>${ped.cliente ?? '—'}</td>
-        <td>${ped.cep ?? '—'}</td>
+        <td>${ped.controlevarchar ?? '—'}</td>
         <td class="num"><strong>${fmtNum(pedTotal)}</strong></td>
         <td>${statusBadge}</td>
         <td style="text-align:center">
@@ -2587,18 +2587,18 @@
           <table style="width:100%;border-collapse:collapse;font-size:.75rem">
             <thead>
               <tr style="background:#dce4f5">
-                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Cód. Prod.</th>
-                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Nome Produto</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Preço Unit. (R$)</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Qtde</th>
-                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Und.</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Total (R$)</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Custo Unit. (R$)</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Custo Total (R$)</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Qtde Conv.</th>
-                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Und. Conv.</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Margem Contrib. (R$)</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Margem (%)</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Cód. Prod.</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Nome Produto</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Preço Unit. (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Qtde</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Und.</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Total (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Custo Unit. (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Custo Total (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Qtde Conv.</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Und. Conv.</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Margem Contrib. (R$)</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Margem (%)</th>
               </tr>
             </thead>
             <tbody>
@@ -2609,9 +2609,9 @@
                 const custoUni = toNum(it.prcu1m ?? it.precocustoitem ?? it.custo);
                 const custoTot = qtde * custoUni;
                 const margem   = total > 0 ? ((total - custoTot) / total) * 100 : 0;
-                const und      = it.und ?? it.unidade ?? '—';
+                const und      = it.un ?? it.und ?? it.unidade ?? '—';
                 const descr    = it.decprod ?? it.descricao ?? it.produto ?? it.nome ?? '—';
-                const codprod  = it.codprod ?? it.cod ?? '—';
+                const codprod  = it.codproduto ?? it.codprod ?? it.cod ?? '—';
                 const hasConv  = (it.unconvertida ?? it.undconvertida ?? '').trim() !== '';
                 const undConv  = it.unconvertida ?? it.undconvertida ?? '';
                 const qtdeConv = toNum(it.qtdeconvertidavd ?? it.qtdeconvertida);
@@ -2644,17 +2644,33 @@
           <table style="width:100%;border-collapse:collapse;font-size:.75rem">
             <thead>
               <tr style="background:#e8dff5">
-                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Descrição Lançamento</th>
-                <th style="padding:6px 11px;text-align:left;color:#4a5568;font-weight:600">Espécie</th>
-                <th style="padding:6px 11px;text-align:right;color:#4a5568;font-weight:600">Valor Original (R$)</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Descrição Lançamento</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Dt. Vencto</th>
+                <th style="padding:6px 11px;text-align:center;color:#9c7a1f;font-weight:600">Quitada</th>
+                <th style="padding:6px 11px;text-align:center;color:#9c7a1f;font-weight:600">Cancelada</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Dt. Pgto</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Dias Atraso</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Valor Pago (R$)</th>
+                <th style="padding:6px 11px;text-align:left;color:#9c7a1f;font-weight:600">Espécie</th>
+                <th style="padding:6px 11px;text-align:right;color:#9c7a1f;font-weight:600">Valor Original (R$)</th>
               </tr>
             </thead>
             <tbody>
-              ${receber.map(rc => `<tr>
+              ${receber.map(rc => {
+                const quitada   = rc.quitada === 'S' || rc.quitada === 1;
+                const cancelada = rc.cancelada === 'S' || rc.cancelada === 1;
+                return `<tr>
                   <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${rc.descricaolancamento ?? '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${rc.datavencimento ?? '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:center"><input type="checkbox" disabled ${quitada ? 'checked' : ''}></td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:center"><input type="checkbox" disabled ${cancelada ? 'checked' : ''}></td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${rc.datarecebimento ?? '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${rc.diasatraso ?? '—'}</td>
+                  <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(toNum(rc.valorpago))}</td>
                   <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0">${rc.especie ?? '—'}</td>
                   <td style="padding:5px 11px;border-bottom:1px solid #e2e8f0;text-align:right">${fmtNum(toNum(rc.valororiginal))}</td>
-                </tr>`).join('')}
+                </tr>`;
+              }).join('')}
             </tbody>
           </table>
         </td>`;
@@ -2695,7 +2711,7 @@
     if (!_rowsVendaDet.length) return;
     const periodo = document.getElementById('vendaDetPeriodo').textContent
       .replace('Período: ', '').replace(/\//g, '-');
-    const header = ['Nº Controle','Data Fec.','Vendedor','Cliente','CEP','Status',
+    const header = ['#','Data Fec.','Vendedor','Cliente','Nº DAV','Status',
                     'Cod.Prod.','Nome Produto','Preco Unit.(R$)','Qtde','Und.',
                     'Total(R$)','Custo Unit.(R$)','Custo Total(R$)',
                     'Qtde Conv.','Und. Conv.','Margem Contrib.(R$)','Margem(%)'];
@@ -2713,9 +2729,9 @@
         const hasConv  = (it.unconvertida ?? it.undconvertida ?? '').trim() !== '';
         data.push([
           ped.controle ?? '', ped.datafec ?? '', ped.vendedor ?? '', ped.cliente ?? '',
-          ped.cep ?? '', statusRaw,
-          it.codprod ?? it.cod ?? '', it.decprod ?? it.descricao ?? it.produto ?? '',
-          vUnit.toFixed(2), qtde.toFixed(2), it.und ?? it.unidade ?? '',
+          ped.controlevarchar ?? '', statusRaw,
+          it.codproduto ?? it.codprod ?? it.cod ?? '', it.decprod ?? it.descricao ?? it.produto ?? '',
+          vUnit.toFixed(2), qtde.toFixed(2), it.un ?? it.und ?? it.unidade ?? '',
           total.toFixed(2), custoUni.toFixed(2), custoTot.toFixed(2),
           hasConv ? toNum(it.qtdeconvertidavd ?? it.qtdeconvertida).toFixed(2) : '',
           hasConv ? (it.unconvertida ?? it.undconvertida ?? '') : '',

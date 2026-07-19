@@ -379,6 +379,371 @@ Simple Storage Service
 USD 0.00
 Total taxUSD 9.
 
+
+
+Access to fetch at 'https://dbclaudiopescados.centraldoaplicativo.com.br/sgbrbi/vendas/detalhada?dt_de=2026.07.03&dt_ate=2026.07.10' from origin 'http://localhost:3001' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\server.js
+Grep "fetch\(`\$\{_empresa.api_base\}|api_base|login_endpoint|async function fetch" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+16 lines of output
+This error means the browser is calling the external API (dbclaudiopescados.centraldoaplicativo.com.br) directly from fetchVendas/fetchCompras/etc. in index.html, and that server isn't returning an Access-Control-Allow-Origin header — so the browser blocks it. This isn't fixable from the frontend; it needs either CORS headers on that external server, or requests routed through our own backend instead of straight from the browser.
+
+Note this conflicts with your CLAUDE.md rule "não adicionar lógica de negócio no server.js — ele só gerencia configuração local," so I want to check before touching server.js.
+
+AskUserQuestion
+OUT
+Your questions have been answered: "How do you want to resolve the CORS block on calls to dbclaudiopescados.centraldoaplicativo.com.br?"="Fix CORS on the external API". You can now continue with these answers in mind.
+Since you control that API, no changes are needed in this repo. On the dbclaudiopescados.centraldoaplicativo.com.br server, you need to add CORS response headers to the endpoints under /sgbrbi/... (login, vendas, compras, producao, etc.):
+
+
+Access-Control-Allow-Origin: http://localhost:3001   (or * if any origin is fine)
+Access-Control-Allow-Methods: GET, POST, OPTIONS
+Access-Control-Allow-Headers: Authorization, Content-Type
+A few things to watch for:
+
+Since requests send Authorization: Bearer <token>, that's a "preflighted" request — the server must also respond to the OPTIONS preflight for these routes with a 2xx and the same headers.
+If you want it to work from any deployment (not just localhost:3001), use Access-Control-Allow-Origin: * for these GET-only report endpoints, or reflect the request's Origin header if you need credentials/cookies (not the case here since auth is a bearer token, not a cookie).
+This needs to apply to every endpoint the frontend calls: the login endpoint and all relatorios[].endpoint paths (vendas, compras, producao, detalhada, etc.), since each is a separate cross-origin request.
+Let me know once it's live and I can help verify the fetches succeed.
+
+altere o cors da aplicação para aceitar trafego de qualquer origem
+Bash List sibling project directories
+IN
+ls -la "c:/Users/Israel/Documents/projetos/Analise de dados/"
+
+OUT
+total 40
+drwxr-xr-x 1 Israel 197121 0 mai 25 20:00 .
+drwxr-xr-x 1 Israel 197121 0 abr 23 19:05 ..
+drwxr-xr-x 1 Israel 197121 0 abr 23 19:41 iga-gestao
+drwxr-xr-x 1 Israel 197121 0 fev 27 14:43 Integracao saurus
+drwxr-xr-x 1 Israel 197121 0 fev  6 16:34 Integracao saurus Delphi
+drwxr-xr-x 1 Israel 197121 0 jan  6  2026 Integracao saurus VB
+drwxr-xr-x 1 Israel 197121 0 fev  9 21:59 kivy
+drwxr-xr-x 1 Israel 197121 0 out  7  2025 powerbi
+drwxr-xr-x 1 Israel 197121 0 jul  8 17:54 simple-bi
+drwxr-xr-x 1 Israel 197121 0 ago 15  2025 Sincronizacao WSaurus
+drwxr-xr-x 1 Israel 197121 0 out  7  2025 vendas-sgbr
+Bash List vendas-sgbr project directory
+IN
+ls -la "c:/Users/Israel/Documents/projetos/Analise de dados/vendas-sgbr/"
+
+OUT
+total 31872
+drwxr-xr-x 1 Israel 197121        0 out  7  2025 .
+drwxr-xr-x 1 Israel 197121        0 mai 25 20:00 ..
+drwxr-xr-x 1 Israel 197121        0 jul  9 18:49 .git
+-rwxr-xr-x 1 Israel 197121   884224 jun 20  2019 fbclient.dll
+-rw-r--r-- 1 Israel 197121     2898 out  6  2025 grafico produtos mais vendidos e rentaveis.py
+-rw-r--r-- 1 Israel 197121     2590 out  6  2025 maisvendidos.majilimp.py
+-rw-r--r-- 1 Israel 197121     1570 out  3  2025 outubro2025.py
+-rw-r--r-- 1 Israel 197121  3100983 out  3  2025 titennotaconsumidor.csv
+-rw-r--r-- 1 Israel 197121 14522531 out  3  2025 titennotaconsumidor.xls
+-rw-r--r-- 1 Israel 197121 14072192 out  3  2025 titennotaconsumidor.xml
+-rw-r--r-- 1 Israel 197121     6935 out  3  2025 titennotaconsumidor.xsl
+-rw-r--r-- 1 Israel 197121     7532 out  6  2025 Top 100 mais lucrativos (lucro bruto tota)l.xls
+-rw-r--r-- 1 Israel 197121     7462 out  6  2025 top 100 mais vendidos (por quantide total).xls
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\package.json
+No cors package. I'll add manual middleware in server.js rather than a new dependency, per your "no new npm deps" convention.
+
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\server.js
+Added 7 lines
+Added CORS middleware to server.js that allows any origin on this app's own API routes (/api/admin/*, /api/empresas/*), including handling preflight OPTIONS requests. Note: this only affects this server's endpoints — it won't fix the original error, since that fetch goes directly to dbclaudiopescados.centraldoaplicativo.com.br, a separate server outside this repo, which still needs its own CORS headers.
+
+c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\server.js
+desfaça a última alteração
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\server.js
+Removed 7 lines
+Reverted — server.js is back to its original state without the CORS middleware.
+
+c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\server.js
+na seção venda detalhada no lugar de cep colocar dav
+Grep "cep" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+5 lines of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 956-985)
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 2541-2585)
+Grep "ndav" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+2 lines of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 1596-1620)
+Grep "cepcliente" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+1 line of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 2691-2720)
+Grep "_rowsVendaDet|fetchVendaDet|renderVendaDet" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+6 lines of output
+Bash Show previous cep-to-dav substitution commit
+IN
+cd "c:/Users/Israel/Documents/projetos/Analise de dados/simple-bi" && git show f4d33dd --stat && echo ---- && git show f4d33dd
+
+OUT
+commit f4d33ddfcf04880a2a2472a68246183cf18fd825
+Author: marcosbras <marcosbras@prof.educacao.sp.gov.br>
+Date:   Thu Jun 25 21:15:13 2026 -0300
+
+    substituiçao cep por dav
+
+ index.html | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+----
+commit f4d33ddfcf04880a2a2472a68246183cf18fd825
+Author: marcosbras <marcosbras@prof.educacao.sp.gov.br>
+Date:   Thu Jun 25 21:15:13 2026 -0300
+
+    substituiçao cep por dav
+
+diff --git a/index.html b/index.html
+index b67f27d..b56f7ac 100644
+--- a/index.html
++++ b/index.html
+@@ -687,7 +687,7 @@
+                 <tr>
+                   <th>Cód. Prod.</th><th>Descrição</th>
+                   <th>Cód. Vend.</th><th>Vendedor</th>
+-                  <th>Cód. Cli.</th><th>Cliente</th><th>CEP</th>
++                  <th>Cód. Cli.</th><th>Cliente</th><th>Nº DAV</th>
+                   <th class="num">Venda (R$)</th>
+                   <th class="num">Qtde.</th>
+                   <th>Und.</th>
+@@ -1732,7 +1732,7 @@
+         <td>${r.codprod ?? '—'}</td><td>${r.descproditemvenda ?? '—'}</td>
+         <td>${r.codvendedor ?? '—'}</td><td>${r.nomevendedor ?? '—'}</td>
+         <td>${r.codcliente ?? '—'}</td><td>${r.nomecliente ?? '—'}</td>
+-        <td>${r.cepcliente ?? '—'}</td>
++        <td>${r.ndav ?? '—'}</td>
+         <td class="num">${fmtNum(venda)}</td>
+         <td class="num">${fmtNum(qtde)}</td>
+         <td>${r.und ?? '—'}</td>
+@@ -2341,7 +2341,7 @@
+     if (!_gruposVendas.length) return;
+     const periodo = document.getElementById('reportPeriodo').textContent
+       .replace('Período: ', '').split(' —')[0].replace(/\//g, '-');
+-    const header = ['Cod.Prod.','Descricao','Cod.Vend.','Vendedor','Cod.Cli.','Cliente','CEP',
++    const header = ['Cod.Prod.','Descricao','Cod.Vend.','Vendedor','Cod.Cli.','Cliente','Nº DAV',
+                     'Venda (R$)','Qtde','Und.','Custo (R$)','Qtde Conv.','Und. Conv.',
+                     'Margem Contrib. (R$)','Margem (%)'];
+     const data = _gruposVendas.map(r => {
+@@ -2350,7 +2350,7 @@
+       const venda = qtde * toNum(r.valorunit);
+       const margem = venda > 0 ? ((venda - custo) / venda * 100) : 0;
+       return [r.codprod, r.descproditemvenda, r.codvendedor, r.nomevendedor,
+-              r.codcliente, r.nomecliente, r.cepcliente,
++              r.codcliente, r.nomecliente, r.ndav ?? '',
+               venda.toFixed(2), qtde, r.und ?? '—', custo.toFixed(2),
+               toNum(r.qtdeconvertidavd), r.unconvertida || '—',
+               (venda - custo).toFixed(2), margem.toFixed(2)];
+Bash Check history of 'Nº DAV' header text in index.html
+IN
+cd "c:/Users/Israel/Documents/projetos/Analise de dados/simple-bi" && git log --oneline -5 -- index.html && git log -p --follow -S "Nº DAV" -- index.html | head -100
+
+OUT
+33620ab relatorio  venda detalhada
+f4d33dd substituiçao cep por dav
+3227097 Ajuste sider bar financeiro pagar e receber e detalhe de venda
+ed8f0c7 Adicionado qtde e unidade convertida, valor de margem de contribuicao e totalizacao em vendas detalhes
+1cfdc5a Ajuste relatorio de producao
+commit 33620ab2bda425034a6d10f80b07b4309462f8b7
+Author: marcosbras <marcosbras@prof.educacao.sp.gov.br>
+Date:   Tue Jul 7 18:03:40 2026 -0300
+
+    relatorio  venda detalhada
+
+diff --git a/index.html b/index.html
+index b56f7ac..b68c1d7 100644
+--- a/index.html
++++ b/index.html
+@@ -479,6 +479,10 @@
+             <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+             Detalhes
+           </button>
++          <button class="nav-item nav-child" id="navVendaDet" onclick="navTo('vendadet')">
++            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/><polyline points="12 17 14 19 18 15"/></svg>
++            Detalhada
++          </button>
+ 
+           <!-- Compras -->
+           <button class="nav-item" id="navComprasDash" onclick="navTo('comprasdash')">
+@@ -917,6 +921,79 @@
+         </div>
+       </div><!-- /secProducao -->
+ 
++      <!-- ── SEÇÃO: VENDA DETALHADA ────────────────────────────────── -->
++      <div id="secVendaDet" style="display:none">
++        <div class="panel">
++          <div class="panel-title">Período — Venda Detalhada</div>
++          <div class="field" id="fieldRelVendaDet" style="display:none">
++            <label>Relatório</label>
++            <select id="selRelVendaDet"></select>
++          </div>
++          <div class="field">
++            <label>Data inicial</label>
++            <input type="date" id="vdet_de" />
++          </div>
++          <div class="field">
++            <label>Data final</label>
++            <input type="date" id="vdet_ate" />
++          </div>
++          <button class="btn btn-primary" id="btnVendaDet" onclick="gerarVendaDet()">
++            Gerar Relatório
++          </button>
++        </div>
++
++        <div id="vendaDetStatus" style="margin:0 24px 10px;font-size:.82rem;min-height:20px;color:#555"></div>
++
++        <div class="summary" id="vendaDetSummary" style="display:none">
++          <div class="card blue"><label>Total de Itens</label><div class="val" id="vdetCardItens">0</div></div>
++          <div class="card green"><label>Total Venda (R$)</label><div class="val" id="vdetCardVenda">0,00</div></div>
++          <div class="card red"><label>Total Custo (R$)</label><div class="val" id="vdetCardCusto">0,00</div></div>
++          <div class="card"><label>Margem Bruta (R$)</label><div class="val" id="vdetCardMargem">0,00</div></div>
++          <div class="card"><label>Margem (%)</label><div class="val" id="vdetCardMargemPct">0%</div></div>
++        </div>
++
++        <div class="report-wrapper" id="vendaDetWrapper" style="display:none">
++          <div class="report-header">
++            <h3>Venda Detalhada</h3>
++            <div class="report-header-right">
++              <small id="vendaDetPeriodo"></small>
++              <button class="btn-pdf" onclick="exportarCSVVendaDet()">
++                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
++                Exportar CSV
++              </button>
++            </div>
++          </div>
++          <div class="table-scroll">
++            <table>
++              <thead>
++                <tr>
++                  <th>Nº DAV</th>
++                  <th>Data Fec.</th>
++                  <th>Vendedor</th>
++                  <th>Cliente</th>
++                  <th>CEP</th>
++                  <th class="num">Total (R$)</th>
++                  <th>Status</th>
++                  <th style="text-align:center">Itens</th>
++                  <th style="text-align:center">Receber</th>
++                </tr>
++              </thead>
++              <tbody id="tbodyVendaDet"></tbody>
++              <tfoot>
++                <tr id="tfootVendaDet">
++                  <td colspan="5"><strong>TOTAL GERAL</strong></td>
++                  <td class="num" id="ftVdetTotal"></td>
++                  <td></td>
++                  <td></td>
++                  <td></td>
++                </tr>
++              </tfoot>
++            </table>
++            <div id="tblVdetEmpty" style="display:none;text-align:center;padding:36px;color:#aaa;font-size:.88rem">Nenhum registro encontrado para o período.</div>
++          </div>
++        </div>
++      </div><!-- /secVendaDet -->
++
+       <!-- ── SEÇÃO: FINANCEIRO / RECEBER ────────────────────────────── -->
+       <div id="secReceber" style="display:none">
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Done. In the "Venda Detalhada" section (index.html), the CEP column/field is now DAV (ped.ndav), both in the on-screen table and the CSV export — matching the same cepcliente → ndav substitution already applied to the aggregate sales report per your CLAUDE.md convention.
+
+
+image.png
+949×205
+mude a cor da fonte dos títulos das colunas para um amarelo ouro, acho que vai ficar melhor
+Grep "report-wrapper|thead|table th" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+34 lines of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 247-250)
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Alterei a cor da fonte dos cabeçalhos de coluna em index.html:248 para #d4af37 (dourado), que tem bom contraste sobre o fundo azul-escuro (--mid). Como é a regra CSS global thead th, isso vale para todas as tabelas de relatório (vendas, compras, produção, financeiro, venda detalhada), não só a da tela que você mostrou.
+
+em vanda detalhada mude o título DAV para Nº DAV
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Feito — o título da coluna virou "Nº DAV" tanto na tabela (index.html:974) quanto no export CSV (index.html:2698) da seção Venda Detalhada.
+
+faça uma correção, dav corresponde ao campo controlevarchar
+Grep "ped\.ndav" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+2 lines of output
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Corrigido — a coluna Nº DAV na seção Venda Detalhada agora lê ped.controlevarchar em vez de ped.ndav, tanto na tabela (index.html:2567) quanto no export CSV (index.html:2716).
+
+coloque título dos itens e receber também na cor dourada
+Grep "vdet-items|vdet-receber|toggleVdetItems|toggleVdetReceber" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+10 lines of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 2583-2652)
+AskUserQuestion
+OUT
+Your questions have been answered: "Os cabeçalhos de Itens e Receber usam fundo claro (azul clarinho #dce4f5 e roxo clarinho #e8dff5), diferente do cabeçalho principal que é azul-escuro. Um dourado vibrante (#d4af37) ficaria com contraste ruim nesses fundos claros. Como prefere resolver?"="Usar dourado mais escuro nesses fundos claros (Recommended)". You can now continue with these answers in mind.
+I'll use a darker, more legible gold (#9c7a1f) for these two headers since their backgrounds are light.
+
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Now the Receber sub-header:
+
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 2646-2651)
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Pronto — os títulos de coluna das subtabelas de Itens (index.html:2590-2601) e Receber (index.html:2647-2649) agora usam dourado (#9c7a1f), ajustado para manter boa legibilidade sobre os fundos claros existentes.
+
+Em vendas detalhada a primeira coluna está como Nº DAV erroneamente, coloque ali um sinal de #. Todos os lugares que se referir a coluna controle então colocar como título da coluna o simbolo #.
+Grep "controle" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+6 lines of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 969-980)
+Confirmado — as duas colunas ficaram com o mesmo rótulo "Nº DAV". Vou trocar a primeira (coluna controle) por "#".
+
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Now the CSV header for the same controle field:
+
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Checking if any other report section (compras, produção, financeiro) has a similar "controle" column header:
+
+Grep "Controle|>#<|r\.controle" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+2 lines of output
+Confirmado — só existia uma referência a "controle" com título de coluna, e já foi corrigida em ambos os lugares: a tabela em tela (index.html:970) e o export CSV (index.html:2698), ambos agora exibindo #. A coluna 1937 é apenas uma contagem interna (não é título de coluna).
+
+
+
+
+c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\readme.txt
+Na seção receber de venda detalhada implemente os seguintes campos logo após Descrição Lançamento: datavencimento  as Dt. Vencto;  quitada use formato chebox; cancelada use formato checkbox também; datarecebimento as Dt. Pgto; diasatraso;  valorpago as Valor Pago
+Grep "Descrição Lançamento|Descricao Lancamento|descricaolancto|Lançamento" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+2 lines of output
+Grep "Descrição Lançamento|Descricao Lancamento|descricaolancto|Lançamento" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+1 line of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 2551-2750)
+Grep "function fmtData|function formatData|function dataBR|toLocaleDateString" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+1 line of output
+Grep "checkbox" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+1 line of output
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Added 16 lines
+Adicionados os campos Dt. Vencto, Quitada (checkbox), Cancelada (checkbox), Dt. Pgto, Dias Atraso e Valor Pago na tabela de recebimentos da seção Venda Detalhada, logo após Descrição Lançamento, em index.html:2647-2669.
+
+no sider onde está definido Detalhes troque para Visão Analítica e onde está definido Detelhada troque para Visão Detalhada
+Grep "Detalhes|Detalhada" (in c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html)
+9 lines of output
+Read c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html (lines 461-515)
+Edit c:\Users\Israel\Documents\projetos\Analise de dados\simple-bi\index.html
+Modified
+Renomeados no sidebar do grupo Vendas: "Detalhes" → "Visão Analítica" (index.html:480) e "Detalhada" → "Visão Detalhada" (index.html:484).
+
+Deixei os itens "Detalhes" de Compras e Produção como estavam, já que eram os únicos rótulos "Detalhada" no arquivo e o contexto era o grupo de Vendas — me avise se quiser que eu renomeie os outros também.
+
+
+
+
+
 prompt de exemplo, não utilize.
 consuma https://dbcayemecolchoes.centraldoaplicativo.com.br/sgbrbi/venda/detalhada?dt_de=2026.05.18&dt_ate=2026.05.22 verifique quais relatórios de analise de dados podemos extrair
 
@@ -450,6 +815,3 @@ Atenção: isso apaga imagens, containers, volumes e bancos locais que estejam d
 No seu caso, como o arquivo está com ~28,3 GiB e o Docker ainda deu erro 500 ao consultar uso, desinstalar/reinstalar é uma solução razoável se você não tem dados importantes dentro dos containers.
 
 12:41
-
-Como instalar docker em windows EC2
-https://www.google.com/search?q=como+instalar+docker+no+ec2+windows+2025&sca_esv=70e0bba46e72b857&sxsrf=APpeQnsm3nhOy4x8aGZcafjenH_RTxFWVQ%3A1784237150470&source=hp&ei=XkxZasyHGb-O5OUPodz46AQ&iflsig=ABILxe8AAAAAallablAllqdYguonPkZZN6OIkcjKlC5C&ved=0ahUKEwjMrq6skdiVAxU_B7kGHSEuHk0Q4dUDCCs&uact=5&oq=como+instalar+docker+no+ec2+windows+2025&gs_lp=Egdnd3Mtd2l6Iihjb21vIGluc3RhbGFyIGRvY2tlciBubyBlYzIgd2luZG93cyAyMDI1MgUQIRigATIFECEYoAEyBRAhGKABMgUQIRigAUjdjQFQAFjEhgFwAHgAkAEAmAG5AqAB8CqqAQkxMS4yNS4zLjG4AQPIAQD4AQGYAiigAqUuwgIIEAAYgAQYsQPCAgsQLhiDARixAxiABMICCBAuGIAEGLEDwgILEAAYgAQYsQMYgwHCAhEQLhiABBixAxiDARjHARjRA8ICDhAuGIAEGLEDGMcBGNEDwgIUEC4YgAQYigUYsQMYgwEYxwEY0QPCAgUQABiABMICCxAAGIAEGIoFGJIDwgIOEAAYgAQYsQMYgwEYyQPCAgUQLhiABMICCxAAGIAEGIoFGLEDwgIREAAYgAQYigUYjQYYsQMYgwHCAgYQABgWGB7CAggQABgWGB4YCsICBRAhGJ8FmAMAkgcINC4zMS40LjGgB5TjAbIHCDQuMzEuNC4xuAelLsIHCzAuNi4yMi4xMS4xyAeqAoAIAQ&sclient=gws-wiz

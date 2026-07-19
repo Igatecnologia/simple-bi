@@ -1,0 +1,582 @@
+#c:\padrao_proxy
+
+#user  nobody;
+worker_processes  1;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;   
+    server_names_hash_bucket_size 64;
+	
+	ssl_certificate     C:/proxy/ssl/engemapres_cert.pem;
+	ssl_certificate_key C:/proxy/ssl/engemapres_key.pem;
+
+    #upstream backend {
+    #    least_conn;
+    #   	server 127.0.0.1:8080;
+    #}
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+
+	# engemapres
+    server {
+        listen       443 ssl;
+        server_name  engemapres.com.br  www.engemapres.com.br;
+
+	    location / {
+				proxy_pass http://127.0.0.1:8088;
+
+				proxy_set_header Host $host;
+				proxy_set_header X-Real-IP $remote_addr;
+				proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+				proxy_set_header X-Forwarded-Proto $scheme;
+		}       
+
+       
+
+
+
+	   error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+
+
+	# naturalcleanbr
+    server {
+        listen       80;
+        server_name  naturalcleanbr.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8086;
+
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+    server {
+        listen       80;
+        server_name  indiqueganhe.naturalcleanbr.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8085;
+
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+  
+
+
+	# brassoft
+    server {
+        listen       80;
+        server_name  brassoft.com;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8084;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+	# suporte
+    server {
+        listen       80;
+        server_name  suporte.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass https://projectauto-n8n.zzvtdv.easypanel.host/webhook/a7008037-2931-400b-a9e6-c2ee7ebaa4e5/chat;
+
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+	
+
+
+
+    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+	
+	#n8n
+    server {
+        listen       80;
+        server_name  n8n.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass https://projectauto-n8n.zzvtdv.easypanel.host;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+	
+			
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+	#Landing page class planner
+    server {
+        listen       80;
+        server_name  aula.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8090;
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+	#Landing page educação financeira
+    server {
+        listen       80;
+        server_name  financeira.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8082;
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+    server {
+        listen       80;
+        server_name  fintech.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8082;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+	
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+    server {
+        listen       80;
+        server_name  financeiro.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8082;
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+
+
+	#Página principal
+    server {
+        listen       80;
+        server_name  centraldoaplicativo.com.br www.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8081;
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+	#Personal
+    server {
+        listen       80;
+        server_name  personal.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8080;
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+
+
+	#Poupei
+    server {
+        listen       80;
+        server_name  poupei.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:8080;
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+			
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+	#Adm centraldoaplicativo
+    server {
+        listen       80;
+        server_name  adm.centraldoaplicativo.com.br;
+
+	    location / {
+		    #proxy_pass http://backend;
+			proxy_pass http://127.0.0.1:3000;
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+
+	    }	        
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+
+
+	#Localhost
+    #server {
+    #    listen       80;
+    #    server_name  localhost;
+
+	#    location / {
+		    #proxy_pass http://backend;
+	#		proxy_pass http://127.0.0.1:3000;
+
+
+	#    }	        
+
+    #    error_page   500 502 503 504  /50x.html;
+    #    location = /50x.html {
+    #        root   html;
+    #    }
+
+    #}
+	
+
+	#dados natural clean
+    server {
+        listen       80;
+        server_name  dados.naturalcleanbr.com.br;
+
+        location / {
+            proxy_pass http://127.0.0.1:3005;
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+		
+
+
+    }
+
+
+
+
+
+	#dados central do aplicativo TODO: Trabalhar com subdominio será descontinuado
+    server {
+        listen       80;
+        server_name  dados.centraldoaplicativo.com.br;
+
+        location / {
+            proxy_pass http://127.0.0.1:9001;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+			
+			
+        }
+		
+
+
+    }
+	
+	#dados poupei
+    server {
+        listen       80;
+        server_name  dbp.centraldoaplicativo.com.br;
+
+        location / {
+            proxy_pass http://127.0.0.1:3001;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+		
+			
+			
+        }
+		
+
+
+    }
+	
+	
+	
+	#report bi cayeme colchões
+    server {
+        listen       80;
+        server_name  cayemecolchoes.centraldoaplicativo.com.br;
+
+        location / {
+            proxy_pass https://simple-bi-sgbr-bi.zzvtdv.easypanel.host/;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+		
+			
+			
+        }
+		
+
+
+    }
+
+
+	#report bi cayeme colchões
+    server {
+        listen       80;
+        server_name  smartreport.centraldoaplicativo.com.br;
+
+        location / {
+            proxy_pass https://simple-bi-sgbr-bi.zzvtdv.easypanel.host/;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+		
+			
+			
+        }
+		
+
+
+    }
+
+
+
+
+
+	#dados cayeme
+    server {
+        listen       80;
+        server_name  dbcayemecolchoes.centraldoaplicativo.com.br;
+
+        location / {
+            proxy_pass http://127.0.0.1:3007;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+		
+			
+			
+        }
+		
+
+
+    }
+	
+	
+	
+	#dados claudio pescado
+    server {
+        listen       80;
+        server_name  dbclaudiopescados.centraldoaplicativo.com.br;
+
+        location / {
+            proxy_pass http://127.0.0.1:3009;
+			
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+		
+			
+			
+        }
+		
+
+
+    }
+	
+	
+	
+	
+
+   
+
+}

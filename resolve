@@ -127,3 +127,93 @@ git branch
 
 prevalece o conteúdo da máquina que está realizando o push
 git push --force origin master
+
+
+Pela imagem, **não há indício de que você esteja usando duas contas diferentes do GitHub**.
+
+O que a imagem mostra é apenas o **histórico de commits e merges** do Git. Os nomes que aparecem ao lado dos commits, como **"marcosbras"** e **"marcosbras-ui"**, são um indício interessante, mas **não significam necessariamente contas diferentes**. Eles podem ser:
+
+* autores diferentes configurados no Git (`user.name` e `user.email`);
+* commits feitos por outra máquina ou outra configuração do Git;
+* ou apenas nomes diferentes de usuários que contribuíram no repositório.
+
+### Como verificar se você está usando duas contas
+
+No terminal, execute:
+
+```bash
+git config user.name
+git config user.email
+```
+
+Depois verifique a configuração global:
+
+```bash
+git config --global user.name
+git config --global user.email
+```
+
+Se os valores forem diferentes, este repositório está usando uma identidade diferente da global.
+
+Também confira qual conta do GitHub está sendo usada para o remoto:
+
+```bash
+git remote -v
+```
+
+Se o remoto for SSH:
+
+```bash
+git@github.com:usuario/repositorio.git
+```
+
+veja qual chave SSH está sendo usada:
+
+```bash
+ssh -T git@github.com
+```
+
+Ele responderá algo como:
+
+```
+Hi marcosbras! You've successfully authenticated...
+```
+
+Isso informa **qual conta do GitHub** está autenticada.
+
+### Pela sua imagem
+
+O que chama atenção é que alguns commits são de **"marcosbras"** e outros de **"marcosbras-ui"**. Isso **pode** indicar duas identidades de autor, mas não prova que sejam duas contas do GitHub.
+
+Se você me enviar a saída destes comandos:
+
+```bash
+git config --list
+git remote -v
+ssh -T git@github.com
+```
+
+Esses **pontos dourados** que aparecem na linha do histórico do Git (como no VS Code, Git Graph ou extensões semelhantes) representam os **commits**.
+
+No seu caso:
+
+* **Cada ponto dourado = um commit**.
+* Quando a linha se divide ou se junta, significa que houve uma **branch** criada ou um **merge** realizado.
+* As cores diferentes (azul, rosa, amarelo, etc.) servem apenas para diferenciar visualmente os caminhos das branches.
+
+Na sua imagem:
+
+* A linha **azul** é a branch `master` (há o rótulo `master` no topo).
+* Os textos **"Merge branch 'master'..."** indicam que ocorreram merges.
+* A sequência de **pontos dourados alinhados** abaixo representa vários commits feitos na mesma linha da branch.
+* Os pequenos desvios da linha (curvas e bifurcações) mostram momentos em que uma branch foi criada, recebeu commits e depois foi integrada novamente.
+
+Resumindo:
+
+* 🟡 **Ponto dourado** = um commit.
+* ↗️ **Desvio da linha** = criação de uma branch ou um caminho paralelo.
+* 🔀 **Junção das linhas** = merge entre branches.
+
+Se você disser qual ferramenta está usando (**Git Graph do VS Code**, **SourceTree**, **GitKraken**, etc.), 
+
+
