@@ -91,6 +91,7 @@ async function fetchXxx(dtDe, dtAte, relSelId) {
 ```
 - Datas no formato `DD.MM.YYYY` (função `dateToApi` converte de `YYYY-MM-DD`)
 - Autenticação sempre via header `Authorization: Bearer <token>` (o proxy repassa esse header para o ERP sem alterá-lo)
+- O proxy também envia `EMP-UUID: <uuid da empresa>` em toda chamada ao ERP (exigido pela fonte de dados para identificar a empresa)
 
 ## Utilitários disponíveis
 

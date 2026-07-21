@@ -107,6 +107,7 @@ app.all('/api/erp/:uuid/*', async (req, res) => {
       headers: {
         ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
         'Content-Type': 'application/json',
+        'EMP-UUID': empresa.uuid,
       },
       body: ['GET', 'HEAD'].includes(req.method) ? undefined : JSON.stringify(req.body),
       signal: AbortSignal.timeout(120000),

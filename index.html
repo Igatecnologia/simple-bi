@@ -1048,6 +1048,7 @@
         <thead>
           <tr>
             <th>Empresa</th>
+            <th>UUID</th>
             <th>URL Base da API</th>
             <th>Login Endpoint</th>
             <th style="text-align:center">Relatórios</th>
@@ -1055,7 +1056,7 @@
           </tr>
         </thead>
         <tbody id="tbodyAdmin">
-          <tr><td colspan="5" class="admin-empty">Carregando…</td></tr>
+          <tr><td colspan="6" class="admin-empty">Carregando…</td></tr>
         </tbody>
       </table>
     </div>
@@ -1473,7 +1474,7 @@
       const lista = await res.json();
       const tbody = document.getElementById('tbodyAdmin');
       if (!lista.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="admin-empty">Nenhuma empresa cadastrada.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="admin-empty">Nenhuma empresa cadastrada.</td></tr>';
         await carregarEmpresas(); return;
       }
       tbody.innerHTML = '';
@@ -1481,11 +1482,13 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${e.nome}</strong></td>
+          <td><code>${e.uuid}</code></td>
           <td><code>${e.api_base}</code></td>
           <td><code>${e.login_endpoint}</code></td>
           <td style="text-align:center"><span class="badge-count">${(e.relatorios||[]).length}</span></td>
           <td>
             <button class="btn-icon" onclick='abrirModalEmpresa(${JSON.stringify(e)})'>✎ Editar</button>
+            <button class="btn-icon" onclick='duplicarEmpresa(${JSON.stringify(e)})'>⧉ Duplicar</button>
             <button class="btn-icon btn-icon-danger" onclick="excluirEmpresa(${e.id})">🗑</button>
           </td>`;
         tbody.appendChild(tr);
@@ -1493,7 +1496,7 @@
       await carregarEmpresas();
     } catch {
       document.getElementById('tbodyAdmin').innerHTML =
-        '<tr><td colspan="5" class="admin-empty" style="color:var(--red)">Erro ao conectar com o servidor.</td></tr>';
+        '<tr><td colspan="6" class="admin-empty" style="color:var(--red)">Erro ao conectar com o servidor.</td></tr>';
     }
   }
 
@@ -1502,14 +1505,18 @@
     document.getElementById('empNome').value    = empresa?.nome ?? '';
     document.getElementById('empApiBase').value = empresa?.api_base ?? '';
     document.getElementById('empLoginEp').value = empresa?.login_endpoint ?? '/usuario/login';
-    document.getElementById('modalEmpTitle').textContent = empresa ? 'Editar Empresa' : 'Nova Empresa';
-    document.getElementById('btnExcluirEmp').style.display = empresa ? '' : 'none';
+    document.getElementById('modalEmpTitle').textContent = empresa?.id ? 'Editar Empresa' : 'Nova Empresa';
+    document.getElementById('btnExcluirEmp').style.display = empresa?.id ? '' : 'none';
     document.getElementById('modalEmpError').textContent = '';
     const container = document.getElementById('relRows');
     container.innerHTML = '';
     (empresa?.relatorios ?? []).forEach(r => addRelRow(r));
     syncRelRowsEmpty();
     showModal('modalEmpresa');
+  }
+
+  function duplicarEmpresa(empresa) {
+    abrirModalEmpresa({ ...empresa, id: null, nome: `${empresa.nome} (cópia)` });
   }
 
   function addRelRow(rel = null) {
